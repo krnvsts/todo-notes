@@ -18,7 +18,7 @@
         </ul>
       </div>
     </router-link>
-    <button @click="deleteItem(note.id)">Удалить</button>
+    <button @click="deleteItem(note.id)">❌Удалить</button>
   </div>
 </template>
 
