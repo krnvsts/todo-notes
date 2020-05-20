@@ -41,23 +41,31 @@ let store = new Vuex.Store({
 			let rand = Math.floor(Math.random() * 10000)
 			note.id = rand
 			state.notes.push(noteObj)
-
-			let localStorageArray = localStorage.getItem("notes");
-			let data = JSON.parse(localStorageArray)
-			data.push(noteObj)
-			localStorage.setItem('notes', JSON.stringify(data));
+		},
+		CHANGE_ITEM: (state, note) => {
+			let changededState = state.notes.map(elem => {
+				if (elem.id == note.id) {
+					elem = note;
+					return elem;
+				}
+				return elem;
+			})
+			state.notes = changededState;
 		},
 		DELETE_ITEM: (state, id) => {
 			// Удалить новую заметку
 			state.notes.map((item, index) => {
 				if (item.id === id) {
 					state.notes.splice(index, 1);
-					let localStorageArray = localStorage.getItem("notes");
-					let data = JSON.parse(localStorageArray)
-					data.splice(index, 1);
-					localStorage.setItem('notes', JSON.stringify(data));
 				}
 			})
+		},
+		CHANGE_LOCAL_STORE: (state) => {
+			// Сетим данные в LS
+			let localStorageArray = localStorage.getItem("notes");
+			let currentLS = JSON.parse(localStorageArray)
+			currentLS = state.notes
+			localStorage.setItem('notes', JSON.stringify(currentLS));
 		}
 	},
 	actions: {
@@ -67,9 +75,15 @@ let store = new Vuex.Store({
 		},
 		ADD_ITEM({ commit }, note) {
 			commit('SET_ITEM', note)
+			commit('CHANGE_LOCAL_STORE')
+		},
+		CHANGE_ITEM({ commit }, note) {
+			commit('CHANGE_ITEM', note)
+			commit('CHANGE_LOCAL_STORE')
 		},
 		DELETE_ITEM({ commit }, id) {
 			commit('DELETE_ITEM', id)
+			commit('CHANGE_LOCAL_STORE')
 		}
 	},
 	getters: {

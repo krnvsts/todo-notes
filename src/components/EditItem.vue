@@ -40,7 +40,7 @@ export default {
     ...mapGetters(["NOTES"])
   },
   methods: {
-    ...mapActions(["ADD_ITEM"]),
+    ...mapActions(["ADD_ITEM", "CHANGE_ITEM"]),
     getNoteId() {
       return this.$route.params.notesId;
     },
@@ -61,29 +61,15 @@ export default {
       this.note.todo.push([this.addCheck, this.addTodo]);
       this.addCheck = "";
       this.addTodo = "";
-      // console.log(this.addCheck);
-      // console.log(this.addTodo);
-      this.addNotesInLocalStorrage();
+      this.changeItem();
     },
-    addNotesInLocalStorrage() {
-      // Тут достаем массив из LS сетим изменения и заново его туда запихиваем с новыми значениями
-      // Перенести эту логику в стор
-      let isExistStorrageArray = localStorage.getItem("notes");
-      let localStorr = JSON.parse(isExistStorrageArray);
-      console.log(localStorr);
-      let data = localStorr.map(elem => {
-        if (elem.id == this.getNoteId()) {
-          elem = this.note;
-          return elem;
-        }
-        return elem;
-      });
-      console.log(data);
-      data = JSON.stringify(data);
-      localStorage.setItem("notes", data);
+    changeItem() {
+      // Отправляем новый обьект в мутацию
+      console.log(this.note);
+      this.CHANGE_ITEM(this.note);
     },
     // -------------------
-    // ADD
+    // ADD NEW ITEM
     // -------------------
     addNewItem() {
       let itemObj = {
