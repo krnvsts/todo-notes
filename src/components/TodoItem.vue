@@ -18,15 +18,22 @@
         </ul>
       </div>
     </router-link>
-    <button @click="deleteItem(note.id)">❌Удалить</button>
+    <button @click="deleteItem()">❌Удалить</button>
+    <modal @hideWindow="hideWindow" @modalConfirm="modalConfirm" :show="show" title="Удалить" />
   </div>
 </template>
 
 <script>
+import Modal from "./modal/Modal";
+import modal from "../mixins/modal";
 import { mapActions } from "vuex";
 
 export default {
   name: "TodoItem",
+  mixins: [modal],
+  components: {
+    Modal
+  },
   props: {
     note: {
       type: Object,
@@ -37,8 +44,11 @@ export default {
   },
   methods: {
     ...mapActions(["DELETE_ITEM"]),
-    deleteItem(id) {
-      this.DELETE_ITEM(id);
+    deleteItem() {
+      this.showWindow();
+    },
+    modalConfirm() {
+      this.DELETE_ITEM(this.note.id);
     }
   }
 };
