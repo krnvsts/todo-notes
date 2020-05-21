@@ -16,10 +16,6 @@
       <button @click="deleteTodo(index)">❌</button>
     </div>
     <div class="note-action__todo">
-      <!-- <label class="container">
-        <input type="checkbox" v-model="addCheck" />
-        <span class="checkmark"></span>
-      </label>-->
       <input
         type="text"
         placeholder="Поставь себе задачу"
@@ -91,8 +87,7 @@ export default {
     addNewTodo() {
       // Добавление нового айтема
       // TODO переделать - получать обьект и сетить один обьект и не хранить 2 поля в data
-      this.note.todo.push([this.addCheck, this.addTodo]);
-      this.addCheck = "";
+      this.note.todo.push([false, this.addTodo]);
       this.addTodo = "";
       this.$refs.todoInput.focus();
       // this.changeItem(); // Раскоменитить если нужно горячее сохранение
