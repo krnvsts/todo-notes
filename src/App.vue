@@ -1,16 +1,16 @@
 <template>
-	<div id="app">
-		<main-wrapper/>
-	</div>
+  <div id="app">
+    <Main />
+  </div>
 </template>
 
 <script>
-	import MainWrapper from './components/MainWrapper.vue'
+import Main from "./components/Main.vue";
 
-	export default {
-		name: 'App',
-		components: {
-			MainWrapper
-		}
-	}
+export default {
+  name: "App",
+  components: {
+    Main
+  }
+};
 </script>

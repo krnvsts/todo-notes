@@ -1,15 +1,15 @@
 <template>
-  <div class="todo-item">
+  <div class="note-item">
     <router-link
-      class="todo-item__link"
+      class="note-item__link"
       :to="{
-			name: 'EditItem',
+			name: 'NoteAction',
 			params: { notesId: note.id }
 		}"
     >
-      <div class="todo-item__title">{{ note.title }}</div>
+      <div class="note-item__title">{{ note.title }}</div>
       <div>{{ note.id }}</div>
-      <div class="todo-item__content">
+      <div class="note-item__content">
         <ul>
           <li v-for="(todo, index) in note.todo" :key="index">
             <span>{{ todo[0] }}</span>
@@ -18,7 +18,7 @@
         </ul>
       </div>
     </router-link>
-    <button @click="deleteItem()">❌Удалить</button>
+    <button @click="openModalDeleteItem()">❌Удалить</button>
     <modal @hideWindow="hideWindow" @modalConfirm="modalConfirm" :show="show" title="Удалить" />
   </div>
 </template>
@@ -29,7 +29,7 @@ import modal from "../mixins/modal";
 import { mapActions } from "vuex";
 
 export default {
-  name: "TodoItem",
+  name: "NoteItem",
   mixins: [modal],
   components: {
     Modal
@@ -44,7 +44,7 @@ export default {
   },
   methods: {
     ...mapActions(["DELETE_ITEM"]),
-    deleteItem() {
+    openModalDeleteItem() {
       this.showWindow();
     },
     modalConfirm() {
@@ -57,7 +57,7 @@ export default {
 <style lang="scss" scoped>
 @import "~@/styles/variables.scss";
 
-.todo-item {
+.note-item {
   border: 1px solid $main-color;
   padding: 15px;
   margin: 15px;

@@ -6,7 +6,7 @@
 import { mapActions } from "vuex";
 
 export default {
-  name: "MainWrapper",
+  name: "Main",
   created() {
     this.ADD_DEFAULT();
   },

@@ -1,64 +1,81 @@
 <template>
-  <div class="edit-item">
-    <template v-if="note">
+  <div class="note-action">
+    <input
+      placeholder="Введи название заметки"
+      class="note-action__title"
+      type="text"
+      :value="note.title"
+      @input="note.title = $event.target.value"
+    />
+    <div class="note-action__todo" v-for="(todo, index) in note.todo" :key="index">
+      <label class="container">
+        <input type="checkbox" v-model="note.todo[index][0]" :checked="todo[0]" />
+        <span class="checkmark"></span>
+      </label>
+      <input type="text" v-model="note.todo[index][1]" @blur="editTodo(index)" />
+      <button @click="deleteTodo(index)">❌</button>
+    </div>
+    <div class="note-action__todo">
+      <!-- <label class="container">
+        <input type="checkbox" v-model="addCheck" />
+        <span class="checkmark"></span>
+      </label>-->
       <input
-        class="edit-item__title"
         type="text"
-        :value="note.title"
-        @input="note.title = $event.target.value"
+        placeholder="Поставь себе задачу"
+        v-model="addTodo"
+        @keyup.enter="addNewTodo"
+        ref="todoInput"
       />
-      <div class="edit-item__todo" v-for="(todo, index) in note.todo" :key="index">
-        <label class="container">
-          <input type="checkbox" v-model="note.todo[index][0]" :checked="todo[0]" />
-          <span class="checkmark"></span>
-        </label>
-        <input type="text" v-model="note.todo[index][1]" @blur="editTodo(index)" />
-        <button @click="deleteTodo(index)">❌</button>
-      </div>
-      <div class="edit-item__todo">
-        <label class="container">
-          <input type="checkbox" v-model="addCheck" />
-          <span class="checkmark"></span>
-        </label>
-        <input type="text" v-model="addTodo" @keyup.enter="addNewTodo" ref="todoInput" />
-        <button @click="addNewTodo">✔️</button>
-      </div>
-      <button @click="saveChange">💾Сохранить</button>
-    </template>
-    <template v-else>
-      <p>Страница создания</p>
-      <button @click="addNewItem">Добавить запись</button>
-    </template>
+      <button @click="addNewTodo">➕</button>
+    </div>
+    <button v-if="isEditable" @click="openModalDeleteNote()">❌Удалить заметку</button>
+    <button
+      @click="isEditable ? saveChange() : addNewItem()"
+    >{{ isEditable ? '💾 Сохранить' : '💾 Добавить заметку' }}</button>
+    <modal @hideWindow="hideWindow" @modalConfirm="modalConfirm" :show="show" title="Удалить" />
   </div>
 </template>
 
 <script>
+import Modal from "./modal/Modal";
+import modal from "../mixins/modal";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  name: "EditItem",
+  name: "NoteAction",
   data: () => ({
-    isEditable: true,
+    isEditable: false,
     note: {},
+    history: [],
     addTodo: "",
     addCheck: ""
   }),
+  mixins: [modal],
+  components: {
+    Modal
+  },
   created() {
     this.getNoteId();
-    this.getDataForId();
   },
   computed: {
     ...mapGetters(["NOTES"])
   },
   methods: {
-    ...mapActions(["ADD_ITEM", "CHANGE_ITEM"]),
+    ...mapActions(["ADD_ITEM", "CHANGE_ITEM", "DELETE_ITEM"]),
     getNoteId() {
-      return this.$route.params.notesId;
+      if (this.$route.params.notesId) {
+        this.isEditable = true;
+        this.getDataForId(this.$route.params.notesId);
+      } else {
+        this.$set(this.note, "title", "");
+        this.$set(this.note, "todo", []);
+      }
     },
-    getDataForId() {
+    getDataForId(noteId) {
       // Достаем из стора массив обьектов, находим нужный, записываем в data
       let data = this.NOTES.filter(elem => {
-        if (elem.id == this.getNoteId()) return elem;
+        if (elem.id == noteId) return elem;
       });
       this.note = data[0];
     },
@@ -93,15 +110,19 @@ export default {
     // ADD NEW ITEM
     // -------------------
     addNewItem() {
-      let itemObj = {
-        title: "Как пользоваться заметками?",
-        todo: [
-          [true, "Нажмите кнопку СОЗДАТЬ"],
-          [true, "Создайте себе список"],
-          [true, "Отмечайте, чтобы не забыть"]
-        ]
-      };
-      this.ADD_ITEM(itemObj);
+      this.ADD_ITEM(this.note);
+      this.isEditable = true;
+      // this.$router.push({ name: "NoteList" });
+    },
+    // -------------------
+    // DELETE ITEM
+    // -------------------
+    openModalDeleteNote() {
+      this.showWindow();
+    },
+    modalConfirm() {
+      this.DELETE_ITEM(this.note.id);
+      this.$router.push({ name: "NoteList" });
     }
     // -------------------
     // BEFORE LEAVE
@@ -115,7 +136,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.edit-item {
+.note-action {
   margin: 40px auto;
   width: 200px;
   font-size: 20px;

@@ -2,8 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // components
-import TodoList from "../components/TodoList";
-import EditItem from "../components/EditItem";
+import NoteList from "../components/NoteList";
+import NoteAction from "../components/NoteAction";
 
 Vue.use(Router)
 
@@ -19,18 +19,18 @@ let router = new Router({
 	routes: [
 		{
 			path: '/',
-			name: 'TodoList',
-			component: TodoList
+			name: 'NoteList',
+			component: NoteList
 		},
 		{
 			path: '/edit/:notesId',
-			name: 'EditItem',
-			component: EditItem
+			name: 'NoteAction',
+			component: NoteAction
 		},
 		{
 			path: '/add',
 			name: 'AddNotes',
-			component: EditItem
+			component: NoteAction
 		}
 	]
 })
