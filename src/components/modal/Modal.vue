@@ -1,9 +1,9 @@
 <template>
-  <div v-if="show" class="modal">
+  <div class="modal">
     <div @click="hideWindow" class="modal__wrapper">
       <div class="modal__window">
-        <p>{{ title }}?</p>
-        <button @click="confirm">{{ title }}</button>
+        <p>{{ type[typeModal].title }}?</p>
+        <button @click="confirm(typeModal)">{{ type[typeModal].buton }}</button>
         <button @click="hideWindow">Закрыть</button>
       </div>
     </div>
@@ -13,16 +13,22 @@
 <script>
 export default {
   name: "Modal",
-  props: {
-    show: {
-      type: Boolean,
-      default() {
-        return false;
+  data: () => ({
+    type: {
+      delete: {
+        title: "Удалить",
+        buton: "Удалить"
+      },
+      editing: {
+        title: "Отменить редактирование",
+        buton: "Отменить"
       }
-    },
-    title: {
+    }
+  }),
+  props: {
+    typeModal: {
       type: String,
-      default: "Удалить"
+      default: "delete"
     }
   },
   methods: {
@@ -30,8 +36,7 @@ export default {
       this.$emit("hideWindow");
     },
     confirm() {
-      this.$emit("modalConfirm");
-      console.log(this.title + " подтверждено");
+      this.$emit("modalConfirm", this.typeModal);
     }
   }
 };

@@ -7,19 +7,21 @@
 			params: { notesId: note.id }
 		}"
     >
-      <div class="note-item__title">{{ note.title }}</div>
-      <div>{{ note.id }}</div>
-      <div class="note-item__content">
-        <ul>
-          <li v-for="(todo, index) in note.todo" :key="index">
-            <span>{{ todo[0] }}</span>
-            <span>{{ todo[1] }}</span>
-          </li>
-        </ul>
-      </div>
+      <div :style="{ color: `#${note.id}bb`}" class="note-item__title">{{ note.title }}</div>
+      <ul class="note-item__list">
+        <li v-for="(todo, index) in note.todo" :key="index">
+          <input type="checkbox" value="1" :checked="todo[0]" @click.prevent />
+          <span :class="{'note-item__list-item--checked': todo[0]}">{{ todo[1] }}</span>
+        </li>
+      </ul>
     </router-link>
-    <button @click="openModalDeleteItem()">❌Удалить</button>
-    <modal @hideWindow="hideWindow" @modalConfirm="modalConfirm" :show="show" title="Удалить" />
+    <button @click="showModal()">❌Удалить</button>
+    <modal
+      v-if="isShowModal"
+      :typeModal="typeModal"
+      @hideWindow="hideWindow"
+      @modalConfirm="modalConfirm"
+    />
   </div>
 </template>
 
@@ -44,9 +46,6 @@ export default {
   },
   methods: {
     ...mapActions(["DELETE_ITEM"]),
-    openModalDeleteItem() {
-      this.showWindow();
-    },
     modalConfirm() {
       this.DELETE_ITEM(this.note.id);
     }
@@ -58,18 +57,31 @@ export default {
 @import "~@/styles/variables.scss";
 
 .note-item {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 300px;
   border: 1px solid $main-color;
   padding: 15px;
   margin: 15px;
-  display: flex;
-  flex-direction: column;
-  max-width: 300px;
-  width: 100%;
 
   &__link {
+    text-decoration: none;
+    color: $text-color;
   }
 
   &__title {
+    font-size: 24px;
+  }
+
+  &__list {
+    list-style: none;
+  }
+
+  &__list-item {
+    &--checked {
+      text-decoration: line-through;
+    }
   }
 }
 </style>

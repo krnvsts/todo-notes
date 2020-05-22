@@ -1,13 +1,14 @@
 export default {
 	data: () => ({
-		show: false,
+		isShowModal: false,
+		typeModal: "delete"
 	}),
 	methods: {
-		showWindow() {
-			this.show = true;
+		showModal() {
+			this.isShowModal = true;
 		},
 		hideWindow() {
-			this.show = false;
-		}
+			this.isShowModal = false;
+		},
 	}
 }

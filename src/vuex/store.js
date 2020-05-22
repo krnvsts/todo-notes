@@ -22,15 +22,15 @@ let store = new Vuex.Store({
 					state.notes.push(data[i])
 				}
 			} else {
-				data = [{
-					id: 5423,
-					title: "Как пользоваться заметками?",
+				data = {
+					id: 500023,
+					title: "Ближайшие планы",
 					todo: [
-						[true, "Нажмите кнопку СОЗДАТЬ"],
-						[true, "Создайте себе список"],
-						[true, "Отмечайте, чтобы не забыть"]
+						[true, "Выполнить тестовое задание"],
+						[false, "Пройти собеседование"],
+						[false, "Разрабатывать крутые сайты с TR LogicLLC"]
 					]
-				}];
+				};
 				state.notes.push(data)
 				localStorage.setItem('notes', JSON.stringify(data));
 			}
@@ -38,7 +38,7 @@ let store = new Vuex.Store({
 		SET_ITEM: (state, note) => {
 			// Добавить новую заметку
 			let noteObj = note
-			let rand = Math.floor(Math.random() * 10000)
+			let rand = Math.floor(100000 + Math.random() * 900000)
 			note.id = rand
 			state.notes.push(noteObj)
 		},

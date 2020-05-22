@@ -8,28 +8,38 @@
       @input="note.title = $event.target.value"
     />
     <div class="note-action__todo" v-for="(todo, index) in note.todo" :key="index">
-      <label class="container">
-        <input type="checkbox" v-model="note.todo[index][0]" :checked="todo[0]" />
-        <span class="checkmark"></span>
+      <label class="note-action__checkbox-label">
+        <input
+          class="note-action__checkbox"
+          type="checkbox"
+          v-model="note.todo[index][0]"
+          :checked="todo[0]"
+        />
+        <span class="note-action__checkmark"></span>
       </label>
       <input type="text" v-model="note.todo[index][1]" @blur="editTodo(index)" />
       <button @click="deleteTodo(index)">❌</button>
     </div>
-    <div class="note-action__todo">
+    <div class="note-action__add">
       <input
         type="text"
-        placeholder="Поставь себе задачу"
+        placeholder="Новый пункт"
         v-model="addTodo"
         @keyup.enter="addNewTodo"
         ref="todoInput"
       />
       <button @click="addNewTodo">➕</button>
     </div>
-    <button v-if="isEditable" @click="openModalDeleteNote()">❌Удалить заметку</button>
+    <button v-if="isEditable" @click="showModal()">❌Удалить заметку</button>
     <button
-      @click="isEditable ? saveChange() : addNewItem()"
+      @click="isEditable ? saveChange() : addNewNote()"
     >{{ isEditable ? '💾 Сохранить' : '💾 Добавить заметку' }}</button>
-    <modal @hideWindow="hideWindow" @modalConfirm="modalConfirm" :show="show" title="Удалить" />
+    <modal
+      v-if="isShowModal"
+      :typeModal="typeModal"
+      @hideWindow="hideWindow"
+      @modalConfirm="modalConfirm"
+    />
   </div>
 </template>
 
@@ -102,20 +112,28 @@ export default {
       this.CHANGE_ITEM(this.note);
     },
     // -------------------
-    // ADD NEW ITEM
+    // ADD NEW NOTE
     // -------------------
-    addNewItem() {
+    addNewNote() {
       this.ADD_ITEM(this.note);
       this.isEditable = true;
-      // this.$router.push({ name: "NoteList" });
+      this.$router.push({ name: "NoteList" });
+    },
+    // -------------------
+    // MODAL
+    // -------------------
+    modalConfirm(type) {
+      if (type === "delete") {
+        console.log(type);
+        this.deleteItem();
+      } else {
+        console.log(type);
+      }
     },
     // -------------------
     // DELETE ITEM
     // -------------------
-    openModalDeleteNote() {
-      this.showWindow();
-    },
-    modalConfirm() {
+    deleteItem() {
       this.DELETE_ITEM(this.note.id);
       this.$router.push({ name: "NoteList" });
     }
@@ -139,7 +157,7 @@ export default {
   &__title {
     font-size: 24px;
     border: none;
-    padding: 10px;
+    padding: 10px 0;
   }
 
   &__todo {
@@ -147,65 +165,67 @@ export default {
     flex-direction: row;
     margin: 9px 0;
   }
-}
 
-.container {
-  display: block;
-  position: relative;
-  padding-left: 35px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  font-size: 22px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-
-  input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
+  &__add {
+    display: flex;
+    justify-content: space-between;
   }
 
-  &:hover input ~ .checkmark {
-    background-color: #ccc;
-  }
-
-  & input:checked ~ .checkmark {
-    background-color: #2196f3;
-  }
-
-  & input:checked ~ .checkmark:after {
+  &__checkbox-label {
     display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    .note-action__checkbox {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    &:hover .note-action__checkbox ~ .note-action__checkmark {
+      background-color: #ccc;
+    }
+
+    & .note-action__checkbox:checked ~ .note-action__checkmark {
+      background-color: #2196f3;
+      &:after {
+        display: block;
+      }
+    }
+
+    & .note-action__checkmark:after {
+      left: 9px;
+      top: 5px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 3px 3px 0;
+      transform: rotate(45deg);
+    }
   }
 
-  & .checkmark:after {
-    left: 9px;
-    top: 5px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-  }
-}
-
-.checkmark {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 25px;
-  width: 25px;
-  background-color: #eee;
-
-  &:after {
-    content: "";
+  &__checkmark {
     position: absolute;
-    display: none;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+
+    &:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
   }
 }
 </style>
