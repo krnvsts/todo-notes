@@ -51,4 +51,4 @@ yarn build
 
 
 
-![](public/report.png)
+![](https://raw.githubusercontent.com/krnvsts/todo-notes/master/public/report.png)
