@@ -34,7 +34,7 @@
     <button
       @click="isEditable ? saveChangesNotes() : addNewNote()"
     >{{ isEditable ? '💾 Сохранить' : '💾 Добавить заметку' }}</button>
-    <button v-if="!isSameNote && isEditable" @click="discardEditing">🔙 Отменить редактирование</button>
+    <button v-if="!isSameNote && isEditable" @click="discardEditing">Отменить редактирование</button>
     <modal
       v-if="isShowModal"
       :typeModal="typeModal"
