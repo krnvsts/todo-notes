@@ -4,7 +4,8 @@ export default {
 		typeModal: "delete"
 	}),
 	methods: {
-		showModal() {
+		showModal(type) {
+			this.typeModal = type
 			this.isShowModal = true;
 		},
 		hideWindow() {

@@ -15,7 +15,7 @@
         </li>
       </ul>
     </router-link>
-    <button @click="showModal()">❌Удалить</button>
+    <button @click="showModal('delete')">❌Удалить</button>
     <modal
       v-if="isShowModal"
       :typeModal="typeModal"

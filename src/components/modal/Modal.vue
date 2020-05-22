@@ -3,7 +3,7 @@
     <div @click="hideWindow" class="modal__wrapper">
       <div class="modal__window">
         <p>{{ type[typeModal].title }}?</p>
-        <button @click="confirm(typeModal)">{{ type[typeModal].buton }}</button>
+        <button @click="confirm()">{{ type[typeModal].buton }}</button>
         <button @click="hideWindow">Закрыть</button>
       </div>
     </div>
@@ -36,7 +36,7 @@ export default {
       this.$emit("hideWindow");
     },
     confirm() {
-      this.$emit("modalConfirm", this.typeModal);
+      this.$emit("modalConfirm");
     }
   }
 };
@@ -66,6 +66,16 @@ export default {
     width: 285px;
     padding: 55px;
     z-index: 2000;
+    animation: scale 50ms linear;
+  }
+}
+
+@keyframes scale {
+  from {
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 </style>

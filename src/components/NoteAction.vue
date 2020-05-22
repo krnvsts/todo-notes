@@ -7,19 +7,21 @@
       :value="note.title"
       @input="note.title = $event.target.value"
     />
-    <div class="note-action__todo" v-for="(todo, index) in note.todo" :key="index">
-      <label class="note-action__checkbox-label">
-        <input
-          class="note-action__checkbox"
-          type="checkbox"
-          v-model="note.todo[index][0]"
-          :checked="todo[0]"
-        />
-        <span class="note-action__checkmark"></span>
-      </label>
-      <input type="text" v-model="note.todo[index][1]" @blur="editTodo(index)" />
-      <button @click="deleteTodo(index)">❌</button>
-    </div>
+    <transition-group name="list" tag="div">
+      <div class="note-action__todo" v-for="(todo, index) in note.todo" :key="index">
+        <label class="note-action__checkbox-label">
+          <input
+            class="note-action__checkbox"
+            type="checkbox"
+            v-model="note.todo[index][0]"
+            :checked="todo[0]"
+          />
+          <span class="note-action__checkmark"></span>
+        </label>
+        <input type="text" v-model="note.todo[index][1]" @blur="editTodo(index)" />
+        <button @click="deleteTodo(index)">❌</button>
+      </div>
+    </transition-group>
     <div class="note-action__add">
       <input
         type="text"
@@ -30,11 +32,11 @@
       />
       <button @click="addNewTodo">➕</button>
     </div>
-    <button v-if="isEditable" @click="showModal()">❌Удалить заметку</button>
+    <button v-if="isEditable" @click="showModal('delete')">❌Удалить заметку</button>
     <button
       @click="isEditable ? saveChangesNotes() : addNewNote()"
     >{{ isEditable ? '💾 Сохранить' : '💾 Добавить заметку' }}</button>
-    <button v-if="!isSameNote && isEditable" @click="discardEditing">Отменить редактирование</button>
+    <button v-if="!isSameNote && isEditable" @click="showModal('editing')">↪️Отменить редактирование</button>
     <modal
       v-if="isShowModal"
       :typeModal="typeModal"
@@ -121,6 +123,7 @@ export default {
       // Отправляем новый обьект в мутацию
       console.log(this.note);
       this.CHANGE_ITEM(this.note);
+      this.$router.push({ name: "NoteList" });
     },
     discardEditing() {
       // Отменить редактирование
@@ -139,12 +142,13 @@ export default {
     // -------------------
     // MODAL
     // -------------------
-    modalConfirm(type) {
-      if (type === "delete") {
-        console.log(type);
+    modalConfirm() {
+      if (this.typeModal === "delete") {
+        console.log(this.typeModal);
         this.deleteNote();
       } else {
-        console.log(type);
+        this.discardEditing();
+        console.log(this.typeModal);
       }
     },
     // -------------------
@@ -164,6 +168,18 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.1s;
+}
+.list-enter,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+</style>
 
 <style lang="scss" scoped>
 .note-action {
