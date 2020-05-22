@@ -32,14 +32,19 @@
     </div>
     <button v-if="isEditable" @click="showModal()">❌Удалить заметку</button>
     <button
-      @click="isEditable ? saveChange() : addNewNote()"
+      @click="isEditable ? saveChangesNotes() : addNewNote()"
     >{{ isEditable ? '💾 Сохранить' : '💾 Добавить заметку' }}</button>
+    <button v-if="!isSameNote && isEditable" @click="discardEditing">🔙 Отменить редактирование</button>
     <modal
       v-if="isShowModal"
       :typeModal="typeModal"
       @hideWindow="hideWindow"
       @modalConfirm="modalConfirm"
     />
+    <br />
+    {{ isSameNote }}
+    <br />
+    {{ history }}
   </div>
 </template>
 
@@ -54,22 +59,27 @@ export default {
     isEditable: false,
     note: {},
     history: [],
-    addTodo: "",
-    addCheck: ""
+    addTodo: ""
   }),
   mixins: [modal],
   components: {
     Modal
   },
   created() {
-    this.getNoteId();
+    this.setNote();
   },
   computed: {
-    ...mapGetters(["NOTES"])
+    ...mapGetters(["NOTES"]),
+    isSameNote() {
+      return (
+        JSON.stringify(this.note) ===
+        JSON.stringify(this.history[this.history.length - 1])
+      );
+    }
   },
   methods: {
     ...mapActions(["ADD_ITEM", "CHANGE_ITEM", "DELETE_ITEM"]),
-    getNoteId() {
+    setNote() {
       if (this.$route.params.notesId) {
         this.isEditable = true;
         this.getDataForId(this.$route.params.notesId);
@@ -77,6 +87,11 @@ export default {
         this.$set(this.note, "title", "");
         this.$set(this.note, "todo", []);
       }
+      this.pushHistory();
+    },
+    pushHistory() {
+      let conditionСopy = JSON.parse(JSON.stringify(this.note));
+      this.history.push(conditionСopy);
     },
     getDataForId(noteId) {
       // Достаем из стора массив обьектов, находим нужный, записываем в data
@@ -100,16 +115,18 @@ export default {
       this.note.todo.push([false, this.addTodo]);
       this.addTodo = "";
       this.$refs.todoInput.focus();
-      // this.changeItem(); // Раскоменитить если нужно горячее сохранение
     },
-    saveChange() {
-      // Сохраняем по кнопке
-      this.changeItem();
-    },
-    changeItem() {
+    saveChangesNotes() {
+      // Сохраняем по кнопке (Отправляем новый обьект в мутацию)
       // Отправляем новый обьект в мутацию
       console.log(this.note);
       this.CHANGE_ITEM(this.note);
+    },
+    discardEditing() {
+      // Отменить редактирование
+      let initialValue = JSON.parse(JSON.stringify(this.history[0]));
+      this.note = initialValue;
+      console.log("Отмена редактирования");
     },
     // -------------------
     // ADD NEW NOTE
@@ -125,7 +142,7 @@ export default {
     modalConfirm(type) {
       if (type === "delete") {
         console.log(type);
-        this.deleteItem();
+        this.deleteNote();
       } else {
         console.log(type);
       }
@@ -133,7 +150,7 @@ export default {
     // -------------------
     // DELETE ITEM
     // -------------------
-    deleteItem() {
+    deleteNote() {
       this.DELETE_ITEM(this.note.id);
       this.$router.push({ name: "NoteList" });
     }
