@@ -13,7 +13,7 @@
           <input
             class="note-action__checkbox"
             type="checkbox"
-            @click="pushStateToHistory"
+            @click="saveStateToHistory"
             v-model="note.todo[index][0]"
             :checked="todo[0]"
           />
@@ -38,8 +38,8 @@
       @click="isEditable ? saveChangesNotes() : addNewNote()"
     >{{ isEditable ? '💾 Сохранить' : '💾 Добавить заметку' }}</button>
     <button v-if="!isSameNote && isEditable" @click="showModal('editing')">↪️Отменить редактирование</button>
-    <button>⬅️Отменить действие</button>
-    <button>➡️Повторить действие</button>
+    <button @click="undoChanges">⬅️Отменить действие</button>
+    <button @click="redoChanges">➡️Повторить действие</button>
     <modal
       v-if="isShowModal"
       :typeModal="typeModal"
@@ -85,59 +85,56 @@ export default {
   methods: {
     ...mapActions(["ADD_ITEM", "CHANGE_ITEM", "DELETE_ITEM"]),
     setNote() {
+      // setDataFor
       if (this.$route.params.notesId) {
         this.isEditable = true;
-        this.getDataForId(this.$route.params.notesId);
+        let data = this.NOTES.filter(elem => {
+          if (elem.id == this.$route.params.notesId) return elem;
+        });
+        this.note = data[0];
       } else {
         this.$set(this.note, "title", "");
         this.$set(this.note, "todo", []);
       }
-      this.pushStateToHistory();
+      this.saveStateToHistory();
     },
-    pushStateToHistory() {
-      console.log("PUSH");
-      // Сохраняем историю
+    saveStateToHistory() {
+      // Сохраняем историю изменений в history: []
       let conditionСopy = JSON.parse(JSON.stringify(this.note));
       this.history.push(conditionСopy);
     },
-    getDataForId(noteId) {
-      // Достаем из стора массив обьектов, находим нужный, записываем в data
-      let data = this.NOTES.filter(elem => {
-        if (elem.id == noteId) return elem;
-      });
-      this.note = data[0];
+    // ------------------
+    // TODO
+    // ------------------
+    addNewTodo() {
+      // Добавление тудушки
+      this.saveStateToHistory();
+      this.note.todo.push([false, this.addTodo]);
+      this.addTodo = "";
+      this.$refs.todoInput.focus();
+    },
+    deleteTodo(index) {
+      // Удаление тудушки
+      this.saveStateToHistory();
+      this.note.todo.splice(index, 1);
     },
     editTodo(index) {
       // Редактирования тудушки
-      let oldValue = JSON.stringify(
+      let oldValueTodo = JSON.stringify(
         this.history[this.history.length - 1].todo[index] &&
           this.history[this.history.length - 1].todo[index][1]
       );
-      let currentVlue = JSON.stringify(this.note.todo[index][1]);
-      console.log("oldValue" + oldValue);
-      console.log("currentVlue" + currentVlue);
+      let currentVlueTodo = JSON.stringify(this.note.todo[index][1]);
 
-      if (oldValue !== currentVlue) {
-        this.pushStateToHistory();
+      if (oldValueTodo !== currentVlueTodo) {
+        this.saveStateToHistory();
         console.log("Разные значения");
       } else {
         console.log("Одинаковые значения");
       }
     },
-    deleteTodo(index) {
-      this.pushStateToHistory();
-      this.note.todo.splice(index, 1);
-    },
-    addNewTodo() {
-      // Добавление новой тудушки
-      this.pushStateToHistory();
-      this.note.todo.push([false, this.addTodo]);
-      this.addTodo = "";
-      this.$refs.todoInput.focus();
-    },
     saveChangesNotes() {
-      // Сохраняем по кнопке (Отправляем новый обьект в мутацию)
-      // Отправляем новый обьект в мутацию
+      // Сохранить изменения редактирования
       this.CHANGE_ITEM(this.note);
       this.$router.push({ name: "NoteList" });
     },
@@ -148,12 +145,13 @@ export default {
       this.history = [initialValue];
     },
     // -------------------
-    // ADD NEW NOTE
+    // UNDO / REDO
     // -------------------
-    addNewNote() {
-      this.ADD_ITEM(this.note);
-      this.isEditable = true;
-      this.$router.push({ name: "NoteList" });
+    undoChanges() {
+      console.log("UNDO");
+    },
+    redoChanges() {
+      console.log("REDO");
     },
     // -------------------
     // MODAL CONFIRM
@@ -168,7 +166,15 @@ export default {
       }
     },
     // -------------------
-    // DELETE ITEM
+    // ADD NEW NOTE
+    // -------------------
+    addNewNote() {
+      this.ADD_ITEM(this.note);
+      this.isEditable = true;
+      this.$router.push({ name: "NoteList" });
+    },
+    // -------------------
+    // DELETE NOTE
     // -------------------
     deleteNote() {
       this.DELETE_ITEM(this.note.id);
