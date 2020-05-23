@@ -13,11 +13,11 @@ let store = new Vuex.Store({
 		SET_NOTES: (state) => {
 			// Если ничего нет в LS - сетим стандартную заметку
 			// Если есть - сетим все что есть в цикле
-			let isExistStorageArray = localStorage.getItem("notes");
+			let isExistLSKey = localStorage.getItem("notes");
 			let data;
 
-			if (isExistStorageArray) {
-				data = JSON.parse(isExistStorageArray);
+			if (isExistLSKey) {
+				data = JSON.parse(isExistLSKey);
 				for (let i = 0; i < data.length; i++) {
 					state.notes.push(data[i])
 				}
