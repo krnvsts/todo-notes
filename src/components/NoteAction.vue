@@ -1,13 +1,13 @@
 <template>
   <div class="note-action">
-    {{ historyCount }}
     <input
       placeholder="Введи заголовок"
       class="note-action__title"
       type="text"
       :value="note.title"
       @input="note.title = $event.target.value"
-      @blur="editTitle"
+      @focus="startEditTitle()"
+      @blur="editTitle()"
     />
     <transition-group name="list" tag="ul">
       <li class="note-action__todo" v-for="(todo, index) in note.todo" :key="index">
@@ -15,13 +15,18 @@
           <input
             class="note-action__checkbox"
             type="checkbox"
-            @click="saveStateToHistory"
+            @click="saveStateToHistory()"
             v-model="note.todo[index][0]"
             :checked="todo[0]"
           />
           <span class="note-action__checkmark"></span>
         </label>
-        <input type="text" v-model="note.todo[index][1]" @blur="editTodo(index)" />
+        <input
+          type="text"
+          v-model="note.todo[index][1]"
+          @focus="startEditTodo()"
+          @blur="editTodo(index)"
+        />
         <button @click="deleteTodo(index)">❌</button>
       </li>
     </transition-group>
@@ -39,9 +44,12 @@
     <button
       @click="isEditable ? saveChangesNote() : addNewNote()"
     >{{ isEditable ? '💾 Сохранить' : '💾 Добавить заметку' }}</button>
-    <button v-if="!isSameNote && isEditable" @click="showModal('editing')">↪️Отменить редактирование</button>
-    <button @click="undoChanges">⬅️Отменить действие</button>
-    <button @click="redoChanges">➡️Повторить действие</button>
+    <button
+      v-if="isEditable && history.length > 1"
+      @click="showModal('editing')"
+    >↪️Отменить редактирование</button>
+    <button v-if="history.length > 1" @click="undoChanges">⬅️Отменить действие</button>
+    <button v-if="false" @click="redoChanges">➡️Повторить действие</button>
     <modal
       v-if="isShowModal"
       :typeModal="typeModal"
@@ -49,9 +57,7 @@
       @modalConfirm="modalConfirm"
     />
     <br />
-    {{ isSameNote }}
-    <br />
-    {{ history }}
+    {{ history.length }}
   </div>
 </template>
 
@@ -66,7 +72,6 @@ export default {
     isEditable: false,
     note: {},
     history: [],
-    historyCount: -1,
     addTodo: ""
   }),
   mixins: [modal],
@@ -77,13 +82,7 @@ export default {
     this.setNoteData();
   },
   computed: {
-    ...mapGetters(["NOTES"]),
-    isSameNote() {
-      return (
-        JSON.stringify(this.note) ===
-        JSON.stringify(this.history[this.history.length - 1])
-      );
-    }
+    ...mapGetters(["NOTES"])
   },
   methods: {
     ...mapActions(["ADD_ITEM", "CHANGE_ITEM", "DELETE_ITEM"]),
@@ -104,7 +103,6 @@ export default {
       // Сохраняем историю изменений в history: []
       let conditionСopy = JSON.parse(JSON.stringify(this.note));
       this.history.push(conditionСopy);
-      this.historyCount++;
     },
     // -------------------
     // TODO
@@ -121,33 +119,42 @@ export default {
       this.saveStateToHistory();
       this.note.todo.splice(index, 1);
     },
+    startEditTitle() {
+      this.saveStateToHistory();
+    },
     editTitle() {
       // Редактирования Тайтла
       let oldValueTitle = JSON.stringify(
-        this.history[this.history.length - 1].title
+        this.history[this.history.length - 2].title
       );
       let currentValueTodo = JSON.stringify(this.note.title);
 
+      console.log(oldValueTitle);
+      console.log(currentValueTodo);
+
       if (oldValueTitle !== currentValueTodo) {
-        this.saveStateToHistory();
         console.log("Разные значения Тайтла");
       } else {
+        this.history.pop();
         console.log("Одинаковые значения Тайтла");
       }
     },
+    startEditTodo() {
+      this.saveStateToHistory();
+    },
     editTodo(index) {
-      // Редактирования тудушки
+      // Проверка на введенное значение при редактировании тудушки
       let oldValueTodo = JSON.stringify(
-        this.history[this.history.length - 1].todo[index] &&
-          this.history[this.history.length - 1].todo[index][1]
+        this.history[this.history.length - 2].todo[index] &&
+          this.history[this.history.length - 2].todo[index][1]
       );
       let currentValueTodo = JSON.stringify(this.note.todo[index][1]);
 
       if (oldValueTodo !== currentValueTodo) {
-        this.saveStateToHistory();
         console.log("Разные значения");
       } else {
-        console.log("Одинаковые значения");
+        this.history.pop();
+        console.log("Одинаковые значения - удаляем последний (при фокусе)");
       }
     },
     // -------------------
@@ -170,15 +177,18 @@ export default {
     undoChanges() {
       // Отменить действие
       console.log("UNDO");
-      // this.historyCount--;
-      // let lastUpdate = JSON.parse(
-      //   JSON.stringify(this.history[this.historyCount])
-      // );
-      // this.note = lastUpdate;
+      if (this.history.length > 1) {
+        let lastUpdate = JSON.parse(
+          JSON.stringify(this.history[this.history.length - 1])
+        );
+        this.note = lastUpdate;
+        this.history.pop();
+        console.log("UNDO - DONE");
+      }
     },
     redoChanges() {
       // Повторить действие
-      console.log("REDO");
+      // console.log("REDO");
       // this.historyCount++;
       // let lastUpdate = JSON.parse(
       //   JSON.stringify(this.history[this.historyCount])
