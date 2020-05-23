@@ -66,6 +66,11 @@ let store = new Vuex.Store({
 			let currentLS = JSON.parse(localStorageArray)
 			currentLS = state.notes
 			localStorage.setItem('notes', JSON.stringify(currentLS));
+		},
+		UPDATE_STORE: (state) => {
+			let localStorageArray = localStorage.getItem("notes");
+			let currentLS = JSON.parse(localStorageArray)
+			state.notes = currentLS
 		}
 	},
 	actions: {
@@ -84,6 +89,9 @@ let store = new Vuex.Store({
 		DELETE_ITEM({ commit }, id) {
 			commit('DELETE_ITEM', id)
 			commit('CHANGE_LOCAL_STORE')
+		},
+		UPDATE_STORE({ commit }) {
+			commit('UPDATE_STORE')
 		}
 	},
 	getters: {

@@ -8,7 +8,7 @@
 
 <script>
 import NoteItem from "./NoteItem";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "NoteList",
@@ -17,6 +17,12 @@ export default {
   },
   computed: {
     ...mapGetters(["NOTES"])
+  },
+  methods: {
+    ...mapActions(["UPDATE_STORE"])
+  },
+  beforeMount() {
+    this.UPDATE_STORE();
   }
 };
 </script>
