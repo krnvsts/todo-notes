@@ -37,7 +37,7 @@
     </div>
     <button v-if="isEditable" @click="showModal('delete')">❌Удалить заметку</button>
     <button
-      @click="isEditable ? saveChangesNotes() : addNewNote()"
+      @click="isEditable ? saveChangesNote() : addNewNote()"
     >{{ isEditable ? '💾 Сохранить' : '💾 Добавить заметку' }}</button>
     <button v-if="!isSameNote && isEditable" @click="showModal('editing')">↪️Отменить редактирование</button>
     <button @click="undoChanges">⬅️Отменить действие</button>
@@ -106,9 +106,9 @@ export default {
       this.history.push(conditionСopy);
       this.historyCount++;
     },
-    // ------------------
+    // -------------------
     // TODO
-    // ------------------
+    // -------------------
     addNewTodo() {
       // Добавление тудушки
       this.saveStateToHistory();
@@ -150,7 +150,10 @@ export default {
         console.log("Одинаковые значения");
       }
     },
-    saveChangesNotes() {
+    // -------------------
+    // NOTE ACTION
+    // -------------------
+    saveChangesNote() {
       // Сохранить изменения редактирования
       this.CHANGE_ITEM(this.note);
       this.$router.push({ name: "NoteList" });
@@ -166,7 +169,7 @@ export default {
     // -------------------
     undoChanges() {
       // Отменить действие
-      // console.log("UNDO");
+      console.log("UNDO");
       // this.historyCount--;
       // let lastUpdate = JSON.parse(
       //   JSON.stringify(this.history[this.historyCount])
@@ -175,7 +178,7 @@ export default {
     },
     redoChanges() {
       // Повторить действие
-      // console.log("REDO");
+      console.log("REDO");
       // this.historyCount++;
       // let lastUpdate = JSON.parse(
       //   JSON.stringify(this.history[this.historyCount])
