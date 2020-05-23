@@ -1,14 +1,14 @@
 <template>
   <div class="note-action">
     <input
-      placeholder="Введи название заметки"
+      placeholder="Введи заголовок"
       class="note-action__title"
       type="text"
       :value="note.title"
       @input="note.title = $event.target.value"
     />
-    <transition-group name="list" tag="div">
-      <div class="note-action__todo" v-for="(todo, index) in note.todo" :key="index">
+    <transition-group name="list" tag="ul">
+      <li class="note-action__todo" v-for="(todo, index) in note.todo" :key="index">
         <label class="note-action__checkbox-label">
           <input
             class="note-action__checkbox"
@@ -20,7 +20,7 @@
         </label>
         <input type="text" v-model="note.todo[index][1]" @blur="editTodo(index)" />
         <button @click="deleteTodo(index)">❌</button>
-      </div>
+      </li>
     </transition-group>
     <div class="note-action__add">
       <input

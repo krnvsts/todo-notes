@@ -22,7 +22,7 @@ let store = new Vuex.Store({
 					state.notes.push(data[i])
 				}
 			} else {
-				data = {
+				data = [{
 					id: 500023,
 					title: "Ближайшие планы",
 					todo: [
@@ -30,8 +30,8 @@ let store = new Vuex.Store({
 						[false, "Пройти собеседование"],
 						[false, "Разрабатывать крутые сайты с TR LogicLLC"]
 					]
-				};
-				state.notes.push(data)
+				}];
+				state.notes.push(data[0])
 				localStorage.setItem('notes', JSON.stringify(data));
 			}
 		},

@@ -1,5 +1,5 @@
 <template>
-  <div class="note-item">
+  <section class="note-item">
     <router-link
       class="note-item__link"
       :to="{
@@ -7,7 +7,7 @@
 			params: { notesId: note.id }
 		}"
     >
-      <div :style="{ color: `#${note.id}bb`}" class="note-item__title">{{ note.title }}</div>
+      <h2 :style="{ color: `#${note.id}bb`}" class="note-item__title">{{ note.title }}</h2>
       <ul class="note-item__list">
         <li v-for="(todo, index) in note.todo" :key="index">
           <input type="checkbox" value="1" :checked="todo[0]" @click.prevent />
@@ -22,7 +22,7 @@
       @hideWindow="hideWindow"
       @modalConfirm="modalConfirm"
     />
-  </div>
+  </section>
 </template>
 
 <script>
