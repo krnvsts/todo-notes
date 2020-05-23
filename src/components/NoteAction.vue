@@ -13,6 +13,7 @@
           <input
             class="note-action__checkbox"
             type="checkbox"
+            @click="pushStateToHistory"
             v-model="note.todo[index][0]"
             :checked="todo[0]"
           />
@@ -37,6 +38,8 @@
       @click="isEditable ? saveChangesNotes() : addNewNote()"
     >{{ isEditable ? '💾 Сохранить' : '💾 Добавить заметку' }}</button>
     <button v-if="!isSameNote && isEditable" @click="showModal('editing')">↪️Отменить редактирование</button>
+    <button>⬅️Отменить действие</button>
+    <button>➡️Повторить действие</button>
     <modal
       v-if="isShowModal"
       :typeModal="typeModal"
@@ -89,9 +92,11 @@ export default {
         this.$set(this.note, "title", "");
         this.$set(this.note, "todo", []);
       }
-      this.pushHistory();
+      this.pushStateToHistory();
     },
-    pushHistory() {
+    pushStateToHistory() {
+      console.log("PUSH");
+      // Сохраняем историю
       let conditionСopy = JSON.parse(JSON.stringify(this.note));
       this.history.push(conditionСopy);
     },
@@ -103,17 +108,29 @@ export default {
       this.note = data[0];
     },
     editTodo(index) {
-      // Редактирования айиема
-      console.log(index);
+      // Редактирования тудушки
+      let oldValue = JSON.stringify(
+        this.history[this.history.length - 1].todo[index] &&
+          this.history[this.history.length - 1].todo[index][1]
+      );
+      let currentVlue = JSON.stringify(this.note.todo[index][1]);
+      console.log("oldValue" + oldValue);
+      console.log("currentVlue" + currentVlue);
+
+      if (oldValue !== currentVlue) {
+        this.pushStateToHistory();
+        console.log("Разные значения");
+      } else {
+        console.log("Одинаковые значения");
+      }
     },
     deleteTodo(index) {
-      console.log(index);
+      this.pushStateToHistory();
       this.note.todo.splice(index, 1);
-      console.log(this.note);
     },
     addNewTodo() {
-      // Добавление нового айтема
-      // TODO переделать - получать обьект и сетить один обьект и не хранить 2 поля в data
+      // Добавление новой тудушки
+      this.pushStateToHistory();
       this.note.todo.push([false, this.addTodo]);
       this.addTodo = "";
       this.$refs.todoInput.focus();
@@ -121,7 +138,6 @@ export default {
     saveChangesNotes() {
       // Сохраняем по кнопке (Отправляем новый обьект в мутацию)
       // Отправляем новый обьект в мутацию
-      console.log(this.note);
       this.CHANGE_ITEM(this.note);
       this.$router.push({ name: "NoteList" });
     },
@@ -129,7 +145,7 @@ export default {
       // Отменить редактирование
       let initialValue = JSON.parse(JSON.stringify(this.history[0]));
       this.note = initialValue;
-      console.log("Отмена редактирования");
+      this.history = [initialValue];
     },
     // -------------------
     // ADD NEW NOTE
@@ -140,13 +156,13 @@ export default {
       this.$router.push({ name: "NoteList" });
     },
     // -------------------
-    // MODAL
+    // MODAL CONFIRM
     // -------------------
     modalConfirm() {
       if (this.typeModal === "delete") {
         console.log(this.typeModal);
         this.deleteNote();
-      } else {
+      } else if (this.typeModal === "editing") {
         this.discardEditing();
         console.log(this.typeModal);
       }
@@ -158,10 +174,10 @@ export default {
       this.DELETE_ITEM(this.note.id);
       this.$router.push({ name: "NoteList" });
     }
-    // -------------------
-    // BEFORE LEAVE
-    // -------------------
   },
+  // -------------------
+  // BEFORE LEAVE
+  // -------------------
   beforeRouteLeave(to, from, next) {
     next();
     console.log("Выход из роута");
@@ -169,7 +185,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .list-enter-active,
 .list-leave-active {
   transition: all 0.1s;
@@ -179,9 +195,6 @@ export default {
   opacity: 0;
   transform: translateY(10px);
 }
-</style>
-
-<style lang="scss" scoped>
 .note-action {
   margin: 40px auto;
   width: 200px;
