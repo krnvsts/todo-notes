@@ -49,7 +49,7 @@
       @click="showModal('editing')"
     >↪️Отменить редактирование</button>
     <button v-if="history.length > 1" @click="undoChanges">⬅️Отменить действие</button>
-    <button v-if="false" @click="redoChanges">➡️Повторить действие</button>
+    <button v-if="historyArchive.length > 1" @click="redoChanges">➡️Повторить действие</button>
     <modal
       v-if="isShowModal"
       :typeModal="typeModal"
@@ -72,6 +72,7 @@ export default {
     isEditable: false,
     note: {},
     history: [],
+    historyArchive: [],
     addTodo: ""
   }),
   mixins: [modal],
@@ -103,6 +104,7 @@ export default {
       // Сохраняем историю изменений в history: []
       let conditionСopy = JSON.parse(JSON.stringify(this.note));
       this.history.push(conditionСopy);
+      this.historyArchive = [];
     },
     // -------------------
     // TODO
@@ -111,6 +113,7 @@ export default {
       // Добавление тудушки
       this.saveStateToHistory();
       this.note.todo.push([false, this.addTodo]);
+      // this.saveStateToHistory();
       this.addTodo = "";
       this.$refs.todoInput.focus();
     },
@@ -176,24 +179,31 @@ export default {
     // -------------------
     undoChanges() {
       // Отменить действие
-      console.log("UNDO");
+      if (this.historyArchive.length === 0) {
+        this.historyArchive.push(this.note);
+      }
       if (this.history.length > 1) {
         let lastUpdate = JSON.parse(
           JSON.stringify(this.history[this.history.length - 1])
         );
         this.note = lastUpdate;
+        this.historyArchive.push(lastUpdate);
         this.history.pop();
-        console.log("UNDO - DONE");
       }
     },
     redoChanges() {
       // Повторить действие
-      // console.log("REDO");
-      // this.historyCount++;
-      // let lastUpdate = JSON.parse(
-      //   JSON.stringify(this.history[this.historyCount])
-      // );
-      // this.note = lastUpdate;
+      if (this.historyArchive.length > 1) {
+        let previousHistoryValue = JSON.parse(
+          JSON.stringify(this.historyArchive[this.historyArchive.length - 2])
+        );
+        let lastArchiveNote = JSON.parse(
+          JSON.stringify(this.historyArchive[this.historyArchive.length - 1])
+        );
+        this.note = previousHistoryValue;
+        this.history.push(lastArchiveNote);
+        this.historyArchive.pop();
+      }
     },
     // -------------------
     // MODAL CONFIRM
