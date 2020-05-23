@@ -173,6 +173,7 @@ export default {
       let initialValue = JSON.parse(JSON.stringify(this.history[0]));
       this.note = initialValue;
       this.history = [initialValue];
+      this.historyArchive = [];
     },
     // -------------------
     // UNDO / REDO
