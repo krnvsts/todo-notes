@@ -1,6 +1,9 @@
 <template>
   <div class="note-list">
-    <p v-if="NOTES.length < 1">Ой, похоже тут пусто. Создай новую заметку</p>
+    <div class="note-list__empty-state" v-if="NOTES.length < 1">
+      <img class="note-list__empty-img" :src="require('../assets/empty.png')" alt="empty" />
+      <p class="note-list__empty-text">Ой, похоже тут пусто. Создай новую заметку (плюсик внизу)</p>
+    </div>
     <note-item v-for="note in NOTES" :key="note.id" :note="note" />
     <router-link class="note-list__add" :to="{name: 'AddNotes'}">
       <icon-base class="note-list__add-icon">
@@ -46,6 +49,21 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+
+  &__empty-state {
+    width: 100%;
+    margin: 8% auto 0;
+    font-size: 20px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  &__empty-img {
+    width: 100%;
+    max-width: 400px;
+  }
+  &__empty-text {
+  }
 
   &__add {
     color: $main-color;

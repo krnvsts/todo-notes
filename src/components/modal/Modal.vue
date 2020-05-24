@@ -2,13 +2,19 @@
   <div class="modal">
     <div @click="hideWindow" class="modal__wrapper">
       <div class="modal__window">
-        <icon-base>
+        <icon-base class="modal__icon" :class="['modal__icon--' + typeModal]">
           <icon-error v-if="typeModal == 'delete'" />
           <icon-warning v-else />
         </icon-base>
-        <p>{{ type[typeModal].title }}?</p>
-        <button @click="confirm()">{{ type[typeModal].buton }}</button>
-        <button @click="hideWindow">Закрыть</button>
+        <p class="modal__title">{{ type[typeModal].title }}?</p>
+        <div class="modal__footer">
+          <button
+            class="modal__button"
+            :class="['modal__button--' + typeModal]"
+            @click="confirm()"
+          >{{ type[typeModal].buton }}</button>
+          <button class="modal__button" @click="hideWindow">Закрыть</button>
+        </div>
       </div>
     </div>
   </div>
@@ -72,19 +78,73 @@ export default {
   }
 
   &__window {
-    display: block;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     position: fixed;
     border-radius: $brd;
     background: #fff;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 285px;
-    padding: 55px;
+    max-width: 400px;
+    min-width: 340px;
+    padding: 30px;
     z-index: 2000;
     animation: scale 50ms linear;
     box-shadow: $shadow;
+  }
+
+  &__icon {
+    width: 50px;
+    height: 50px;
+
+    &--editing {
+      color: $orange-color;
+    }
+
+    &--delete {
+      color: $red-color;
+    }
+  }
+
+  &__title {
+    font-size: 24px;
+    padding: 20px 0;
+  }
+
+  &__footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__button {
+    font-size: 15px;
+    padding: 5px 18px;
+    border: 1px solid;
+    border-radius: 20px;
+    line-height: 18px;
+
+    &:hover {
+      background-color: $gray-color;
+    }
+
+    &--editing {
+      color: $orange-color;
+      &:hover {
+        background-color: $orange-color;
+        color: #fff;
+      }
+    }
+
+    &--delete {
+      color: $red-color;
+      &:hover {
+        background-color: $red-color;
+        color: #fff;
+      }
+    }
   }
 }
 
