@@ -1,20 +1,27 @@
 @import 'variables';
 
 // 576px и выше
+@mixin xs-and-up {
+  @media only screen and (min-width: #{$xs}) {
+    @content;
+  }
+}
+
+// 768px и выше
 @mixin sm-and-up {
   @media only screen and (min-width: #{$sm}) {
     @content;
   }
 }
 
-// 768px и выше
+// 992px и выше
 @mixin md-and-up {
   @media only screen and (min-width: #{$md}) {
     @content;
-  }
+	}
 }
 
-// 992px и выше
+// 1200px и выше
 @mixin lg-and-up {
   @media only screen and (min-width: #{$lg}) {
     @content;

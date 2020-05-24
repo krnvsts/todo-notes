@@ -147,11 +147,16 @@ export default {
   &__delete {
     opacity: 1;
     margin-top: auto;
+    margin-left: auto;
     padding-top: 5px;
     transition: $transition;
+
+    &:hover {
+      color: $red-color;
+    }
   }
 
-  @include sm-and-up {
+  @include xs-and-up {
     width: 44%;
 
     .note-item__delete {
@@ -163,12 +168,16 @@ export default {
     }
   }
 
-  @include md-and-up {
+  @include sm-and-up {
     width: 29%;
   }
 
+  @include md-and-up {
+    width: 21.5%;
+  }
+
   @include lg-and-up {
-    width: 16.9%;
+    width: 17.5%;
   }
 }
 </style>

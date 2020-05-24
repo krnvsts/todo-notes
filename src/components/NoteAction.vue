@@ -456,6 +456,12 @@ export default {
     margin-top: 5px;
   }
 
+  &__add-button {
+    &:hover {
+      color: $main-color;
+    }
+  }
+
   &__add-icon {
     width: 30px;
     height: 30px;
@@ -504,7 +510,7 @@ export default {
     color: $red-color;
   }
 
-  @include sm-and-up {
+  @include xs-and-up {
     width: 400px;
   }
 }
