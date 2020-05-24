@@ -15,7 +15,7 @@
         </li>
       </ul>
     </router-link>
-    <button @click="showModal('delete')">
+    <button class="note-item__delete" @click="showModal('delete')">
       <icon-base>
         <icon-delete-bin />
       </icon-base>
@@ -84,18 +84,6 @@ export default {
     box-shadow: $shadow;
   }
 
-  @include sm-and-up {
-    width: 44%;
-  }
-
-  @include md-and-up {
-    width: 29%;
-  }
-
-  @include lg-and-up {
-    width: 16.9%;
-  }
-
   &__link {
     text-decoration: none;
     color: $text-color;
@@ -104,6 +92,7 @@ export default {
   &__title {
     font-size: 24px;
     word-break: break-word;
+    margin-bottom: 5px;
   }
 
   &__list {
@@ -114,6 +103,32 @@ export default {
     &--checked {
       text-decoration: line-through;
     }
+  }
+
+  &__delete {
+    opacity: 1;
+    margin-top: auto;
+    transition: $transition;
+  }
+
+  @include sm-and-up {
+    width: 44%;
+
+    .note-item__delete {
+      opacity: 0;
+    }
+
+    &:hover .note-item__delete {
+      opacity: 1;
+    }
+  }
+
+  @include md-and-up {
+    width: 29%;
+  }
+
+  @include lg-and-up {
+    width: 16.9%;
   }
 }
 </style>

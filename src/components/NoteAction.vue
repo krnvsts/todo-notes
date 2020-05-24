@@ -1,6 +1,7 @@
 <template>
   <div class="note-action">
     <input
+      :style="{ color: `#${note.id}bb`}"
       placeholder="Введи заголовок"
       class="note-action__title"
       type="text"
@@ -23,73 +24,79 @@
           <span class="note-action__checkmark"></span>
         </label>
         <input
+          class="note-action__todo-name"
           type="text"
           v-model="note.todo[index][1]"
           @focus="startEditTodo()"
           @blur="editTodo(index)"
         />
-        <button @click="deleteTodo(index)">
+        <button class="note-action__todo-delete" @click="deleteTodo(index)">
           <icon-base>
             <icon-clear />
           </icon-base>
         </button>
       </li>
     </transition-group>
-    <div class="note-action__add">
+    <section class="note-action__add-section">
+      <button class="note-action__add-button" @click="addNewTodo">
+        <icon-base class="note-action__add-icon">
+          <icon-add-circle />
+        </icon-base>
+      </button>
       <input
+        class="note-action__add-input"
         type="text"
         placeholder="Новый пункт"
         v-model="addTodo"
         @keyup.enter="addNewTodo"
         ref="todoInput"
       />
-      <button @click="addNewTodo">
+    </section>
+    <footer class="note-action__footer">
+      <button @click="isEditable ? saveChangesNote() : addNewNote()">
         <icon-base>
-          <icon-add-circle />
+          <icon-save />
+        </icon-base>
+        {{ isEditable ? 'Сохранить' : 'Добавить заметку' }}
+      </button>
+      <button v-if="isEditable" @click="showModal('delete')">
+        <icon-base>
+          <icon-delete-bin />
         </icon-base>
       </button>
-    </div>
-    <button v-if="isEditable" @click="showModal('delete')">
-      <icon-base>
-        <icon-delete-bin />
-      </icon-base>
-      <span>Удалить заметку</span>
-    </button>
-    <button @click="isEditable ? saveChangesNote() : addNewNote()">
-      <icon-base>
-        <icon-save />
-      </icon-base>
-      {{ isEditable ? 'Сохранить' : 'Добавить заметку' }}
-    </button>
-    <button v-if="isEditable && history.length > 1" @click="showModal('editing')">
-      <icon-base>
-        <icon-discard />
-      </icon-base>
-    </button>
-    <button v-if="history.length > 1" @click="undoChanges">
-      <icon-base>
-        <icon-undo />
-      </icon-base>
-    </button>
-    <button v-if="historyArchive.length > 1" @click="redoChanges">
-      <icon-base>
-        <icon-redo />
-      </icon-base>
-    </button>
+      <button v-if="isEditable && history.length > 1" @click="showModal('editing')">
+        <icon-base>
+          <icon-discard />
+        </icon-base>
+      </button>
+      <button v-if="history.length > 1" @click="undoChanges">
+        <icon-base>
+          <icon-undo />
+        </icon-base>
+      </button>
+      <button v-if="historyArchive.length > 1" @click="redoChanges">
+        <icon-base>
+          <icon-redo />
+        </icon-base>
+      </button>
+      <div class="note-action__warning">
+        <p class="note-action__warning-text">{{ warning }}</p>
+      </div>
+    </footer>
     <modal
       v-if="isShowModal"
       :typeModal="typeModal"
       @hideWindow="hideWindow"
       @modalConfirm="modalConfirm"
     />
-    <br />
-    {{ history.length }}
   </div>
 </template>
 
 <script>
 import Modal from "./modal/Modal";
 import modal from "../mixins/modal";
+
+// vuex
 import { mapGetters, mapActions } from "vuex";
 
 // icons
@@ -109,7 +116,8 @@ export default {
     note: {},
     history: [],
     historyArchive: [],
-    addTodo: ""
+    addTodo: "",
+    warning: ""
   }),
   mixins: [modal],
   components: {
@@ -125,6 +133,10 @@ export default {
   },
   created() {
     this.setNoteData();
+    document.addEventListener("keydown", this.keyPress);
+  },
+  beforeDestroy() {
+    document.removeEventListener("keydown", this.keyPress);
   },
   computed: {
     ...mapGetters(["NOTES"])
@@ -155,11 +167,15 @@ export default {
     // -------------------
     addNewTodo() {
       // Добавление тудушки
-      this.saveStateToHistory();
-      this.note.todo.push([false, this.addTodo]);
-      // this.saveStateToHistory();
-      this.addTodo = "";
-      this.$refs.todoInput.focus();
+      if (this.addTodo.length > 0) {
+        this.saveStateToHistory();
+        this.note.todo.push([false, this.addTodo]);
+        this.addTodo = "";
+        this.warning = "";
+        this.$refs.todoInput.focus();
+      } else {
+        this.warning = "Название пункта не должно быть пустое";
+      }
     },
     deleteTodo(index) {
       // Удаление тудушки
@@ -209,8 +225,12 @@ export default {
     // -------------------
     saveChangesNote() {
       // Сохранить изменения редактирования
-      this.CHANGE_ITEM(this.note);
-      this.$router.push({ name: "NoteList" });
+      if (this.note.title.length > 0) {
+        this.CHANGE_ITEM(this.note);
+        this.$router.push({ name: "NoteList" });
+      } else {
+        this.warning = "Название заметки не должно быть пустое";
+      }
     },
     discardEditing() {
       // Отменить редактирование
@@ -222,6 +242,24 @@ export default {
     // -------------------
     // UNDO / REDO
     // -------------------
+    keyPress(e) {
+      if (e.keyCode == 90 && e.ctrlKey) {
+        e.preventDefault();
+        this.undoChanges();
+      }
+      if (e.keyCode == 89 && e.ctrlKey) {
+        e.preventDefault();
+        this.redoChanges();
+      }
+      if (e.keyCode == 83 && e.ctrlKey) {
+        e.preventDefault();
+        if (this.isEditable) {
+          this.saveChangesNote();
+        } else {
+          this.addNewNote();
+        }
+      }
+    },
     undoChanges() {
       // Отменить действие
       if (this.historyArchive.length === 0) {
@@ -266,9 +304,14 @@ export default {
     // ADD NEW NOTE
     // -------------------
     addNewNote() {
-      this.ADD_ITEM(this.note);
-      this.isEditable = true;
-      this.$router.push({ name: "NoteList" });
+      if (this.note.title.length > 0) {
+        this.ADD_ITEM(this.note);
+        this.isEditable = true;
+        this.warning = "";
+        this.$router.push({ name: "NoteList" });
+      } else {
+        this.warning = "Название заметки не должно быть пустое";
+      }
     },
     // -------------------
     // DELETE NOTE
@@ -290,25 +333,22 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/variables.scss";
-
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.1s;
-}
-
-.list-enter,
-.list-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
+@import "~@/styles/mixins.scss";
 
 .note-action {
-  margin: 40px auto;
-  width: 200px;
-  font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 30px);
+  border: 1px solid $gray-color;
+  border-radius: $brd;
+  padding: 15px;
+  margin: 15px auto;
+  overflow: hidden;
+  transition: $transition;
 
   &__title {
     font-size: 24px;
+    font-weight: 600;
     border: none;
     padding: 10px 0;
   }
@@ -316,18 +356,19 @@ export default {
   &__todo {
     display: flex;
     flex-direction: row;
-    margin: 9px 0;
-  }
 
-  &__add {
-    display: flex;
-    justify-content: space-between;
+    &:hover {
+      .note-action__todo-delete {
+        opacity: 1;
+      }
+    }
   }
 
   &__checkbox-label {
     display: block;
     position: relative;
-    padding-left: 35px;
+    margin: 8px 0 0 2px;
+    padding: 0 0 0 35px;
     cursor: pointer;
     font-size: 22px;
     user-select: none;
@@ -341,7 +382,7 @@ export default {
     }
 
     &:hover .note-action__checkbox ~ .note-action__checkmark {
-      background-color: #ccc;
+      background-color: $gray-color;
     }
 
     & .note-action__checkbox:checked ~ .note-action__checkmark {
@@ -369,7 +410,7 @@ export default {
     height: 25px;
     width: 25px;
     border-radius: 50%;
-    background-color: #eee;
+    background-color: $gray-color;
 
     &:after {
       content: "";
@@ -377,5 +418,71 @@ export default {
       display: none;
     }
   }
+
+  &__todo-name {
+    width: 100%;
+    font-size: 14px;
+    padding: 12px 0;
+    border: none;
+  }
+
+  &__todo-delete {
+    opacity: 0;
+  }
+
+  &__add-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+  }
+
+  &__add-button {
+  }
+
+  &__add-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 7px;
+  }
+
+  &__add-input {
+    width: 100%;
+    border: none;
+  }
+
+  &__footer {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+  }
+
+  &__warning {
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    position: fixed;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: $red-color;
+
+    &-text {
+      text-align: center;
+    }
+  }
+
+  @include sm-and-up {
+    width: 400px;
+  }
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.1s;
+}
+
+.list-enter,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
 }
 </style>

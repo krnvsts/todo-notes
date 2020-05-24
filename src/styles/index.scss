@@ -3,13 +3,13 @@
   padding: 0;
   box-sizing: border-box;
   outline: 0;
-  font-family: 'Roboto Condensed', sans-serif;
+	font-family: 'Roboto Condensed', sans-serif;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 button {
 	border: none;
 	background: transparent;
-	padding: 3px;
 	user-select: none;
 	cursor: pointer;
 }
