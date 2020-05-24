@@ -45,12 +45,12 @@ import IconDeleteBin from "./icons/IconDeleteBin.vue";
 
 export default {
   name: "NoteItem",
-  mixins: [modal],
   components: {
     Modal,
     IconBase,
     IconDeleteBin
   },
+  mixins: [modal],
   props: {
     note: {
       type: Object,
@@ -102,6 +102,8 @@ export default {
 
   &__todo {
     list-style: none;
+    max-height: 390px;
+    overflow: hidden;
   }
 
   &__todo-item {

@@ -33,11 +33,11 @@ export default {
   computed: {
     ...mapGetters(["NOTES"])
   },
-  methods: {
-    ...mapActions(["UPDATE_STORE"])
-  },
   beforeMount() {
     this.UPDATE_STORE();
+  },
+  methods: {
+    ...mapActions(["UPDATE_STORE"])
   }
 };
 </script>

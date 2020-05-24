@@ -1,34 +1,34 @@
 <template>
   <div class="note-action">
     <input
-      :style="{ color: `#${note.id}bb`}"
+      type="text"
+      maxlength="50"
       placeholder="Введи заголовок"
       class="note-action__title"
-      type="text"
+      :style="{ color: `#${note.id}bb`}"
       :value="note.title"
       @input="note.title = $event.target.value"
       @focus="startEditTitle()"
       @blur="editTitle()"
-      maxlength="50"
     />
     <transition-group name="list" tag="ul">
       <li class="note-action__todo" v-for="(todo, index) in note.todo" :key="index">
         <label class="note-action__checkbox-label">
           <input
-            class="note-action__checkbox"
             type="checkbox"
-            @click="saveStateToHistory()"
+            class="note-action__checkbox"
             v-model="note.todo[index][0]"
             :checked="todo[0]"
+            @click="saveStateToHistory()"
           />
           <span class="note-action__checkmark"></span>
         </label>
         <input
+          type="text"
+          maxlength="50"
           class="note-action__todo-name"
           :class="{'note-action__todo-name--checked': todo[0]}"
-          type="text"
           v-model="note.todo[index][1]"
-          maxlength="50"
           @focus="startEditTodo()"
           @blur="editTodo(index)"
         />
@@ -43,18 +43,19 @@
       </li>
     </transition-group>
     <section class="note-action__add-section">
-      <button class="note-action__add-button" @click="addNewTodo">
+      <button class="note-action__add-button" @click="addNewTodo()">
         <icon-base class="note-action__add-icon">
           <icon-add-circle />
         </icon-base>
       </button>
       <input
-        class="note-action__add-input"
         type="text"
+        class="note-action__add-input"
         placeholder="Новый пункт"
-        v-model="addTodo"
-        @keyup.enter="addNewTodo"
         ref="todoInput"
+        maxlength="50"
+        v-model="addTodo"
+        @keyup.enter="addNewTodo()"
       />
     </section>
     <p class="note-action__warning">{{ warning }}</p>
@@ -69,12 +70,12 @@
         {{ isEditable ? 'Сохранить' : 'Добавить заметку' }}
       </button>
       <div class="note-action__history-buttons">
-        <button v-if="history.length > 1" @click="undoChanges">
+        <button v-if="history.length > 1" @click="undoChanges()">
           <icon-base>
             <icon-undo />
           </icon-base>
         </button>
-        <button v-if="historyArchive.length > 1" @click="redoChanges">
+        <button v-if="historyArchive.length > 1" @click="redoChanges()">
           <icon-base>
             <icon-redo />
           </icon-base>
@@ -110,6 +111,8 @@
 
 <script>
 import Modal from "./modal/Modal";
+
+// mixins
 import modal from "../mixins/modal";
 
 // vuex
@@ -127,15 +130,6 @@ import IconDiscard from "./icons/IconDiscard.vue";
 
 export default {
   name: "NoteAction",
-  data: () => ({
-    isEditable: false,
-    note: {},
-    history: [],
-    historyArchive: [],
-    addTodo: "",
-    warning: ""
-  }),
-  mixins: [modal],
   components: {
     Modal,
     IconBase,
@@ -147,6 +141,18 @@ export default {
     IconRedo,
     IconDiscard
   },
+  mixins: [modal],
+  data: () => ({
+    isEditable: false,
+    note: {},
+    history: [],
+    historyArchive: [],
+    addTodo: "",
+    warning: ""
+  }),
+  computed: {
+    ...mapGetters(["NOTES"])
+  },
   created() {
     this.setNoteData();
     document.addEventListener("keydown", this.keyPress);
@@ -154,12 +160,11 @@ export default {
   beforeDestroy() {
     document.removeEventListener("keydown", this.keyPress);
   },
-  computed: {
-    ...mapGetters(["NOTES"])
-  },
   methods: {
     ...mapActions(["ADD_ITEM", "CHANGE_ITEM", "DELETE_ITEM"]),
     setNoteData() {
+      // Если есть ID - редактируем
+      // Иначе - сетим значения
       if (this.$route.params.notesId) {
         this.isEditable = true;
         let data = this.NOTES.filter(elem => {
@@ -171,12 +176,6 @@ export default {
         this.$set(this.note, "todo", []);
       }
       this.saveStateToHistory();
-    },
-    saveStateToHistory() {
-      // Сохраняем историю изменений в history: []
-      let conditionСopy = JSON.parse(JSON.stringify(this.note));
-      this.history.push(conditionСopy);
-      this.historyArchive = [];
     },
     // -------------------
     // TODO
@@ -199,26 +198,19 @@ export default {
       this.note.todo.splice(index, 1);
     },
     startEditTitle() {
+      // Редактирования тайтла
       this.saveStateToHistory();
     },
     editTitle() {
-      // Редактирования Тайтла
+      // Проверка на введенное значение при редактировании тайтла
       let oldValueTitle = JSON.stringify(
         this.history[this.history.length - 2].title
       );
       let currentValueTodo = JSON.stringify(this.note.title);
-
-      console.log(oldValueTitle);
-      console.log(currentValueTodo);
-
-      if (oldValueTitle !== currentValueTodo) {
-        console.log("Разные значения Тайтла");
-      } else {
-        this.history.pop();
-        console.log("Одинаковые значения Тайтла");
-      }
+      if (oldValueTitle === currentValueTodo) this.history.pop();
     },
     startEditTodo() {
+      // Редактирование тудушки
       this.saveStateToHistory();
     },
     editTodo(index) {
@@ -228,19 +220,19 @@ export default {
           this.history[this.history.length - 2].todo[index][1]
       );
       let currentValueTodo = JSON.stringify(this.note.todo[index][1]);
-
-      if (oldValueTodo !== currentValueTodo) {
-        console.log("Разные значения");
-      } else {
-        this.history.pop();
-        console.log("Одинаковые значения - удаляем последний (при фокусе)");
-      }
+      if (oldValueTodo === currentValueTodo) this.history.pop();
     },
     // -------------------
     // NOTE ACTION
     // -------------------
+    saveStateToHistory() {
+      // Сохраняем историю изменений в history: []
+      let conditionСopy = JSON.parse(JSON.stringify(this.note));
+      this.history.push(conditionСopy);
+      this.historyArchive = [];
+    },
     saveChangesNote() {
-      // Сохранить изменения редактирования
+      // Сохранить изменения в заметке
       if (this.note.title.length > 0) {
         this.CHANGE_ITEM(this.note);
         this.$router.push({ name: "NoteList" });
@@ -248,17 +240,11 @@ export default {
         this.warning = "Название заметки не должно быть пустое";
       }
     },
-    discardEditing() {
-      // Отменить редактирование
-      let initialValue = JSON.parse(JSON.stringify(this.history[0]));
-      this.note = initialValue;
-      this.history = [initialValue];
-      this.historyArchive = [];
-    },
     // -------------------
     // UNDO / REDO
     // -------------------
     keyPress(e) {
+      // Слушаем нажатия
       if (e.keyCode == 90 && e.ctrlKey) {
         e.preventDefault();
         this.undoChanges();
@@ -304,16 +290,21 @@ export default {
         this.historyArchive.pop();
       }
     },
+    discardEditing() {
+      // Откатить изменееия
+      let initialValue = JSON.parse(JSON.stringify(this.history[0]));
+      this.note = initialValue;
+      this.history = [initialValue];
+      this.historyArchive = [];
+    },
     // -------------------
     // MODAL CONFIRM
     // -------------------
     modalConfirm() {
       if (this.typeModal === "delete") {
-        console.log(this.typeModal);
         this.deleteNote();
       } else if (this.typeModal === "editing") {
         this.discardEditing();
-        console.log(this.typeModal);
       }
     },
     // -------------------
@@ -336,13 +327,6 @@ export default {
       this.DELETE_ITEM(this.note.id);
       this.$router.push({ name: "NoteList" });
     }
-  },
-  // -------------------
-  // BEFORE LEAVE
-  // -------------------
-  beforeRouteLeave(to, from, next) {
-    next();
-    console.log("Выход из роута");
   }
 };
 </script>

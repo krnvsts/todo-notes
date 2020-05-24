@@ -33,6 +33,12 @@ export default {
     IconWarning,
     IconError
   },
+  props: {
+    typeModal: {
+      type: String,
+      default: "delete"
+    }
+  },
   data: () => ({
     type: {
       delete: {
@@ -45,12 +51,6 @@ export default {
       }
     }
   }),
-  props: {
-    typeModal: {
-      type: String,
-      default: "delete"
-    }
-  },
   methods: {
     hideWindow() {
       this.$emit("hideWindow");
