@@ -30,7 +30,10 @@
           @focus="startEditTodo()"
           @blur="editTodo(index)"
         />
-        <button class="note-action__todo-delete" @click="deleteTodo(index)">
+        <button
+          class="note-action__todo-delete note-action__button note-action__button--delete"
+          @click="deleteTodo(index)"
+        >
           <icon-base>
             <icon-clear />
           </icon-base>
@@ -52,36 +55,47 @@
         ref="todoInput"
       />
     </section>
+    <p class="note-action__warning">{{ warning }}</p>
     <footer class="note-action__footer">
-      <button @click="isEditable ? saveChangesNote() : addNewNote()">
+      <button
+        class="note-action__button note-action__button--save"
+        @click="isEditable ? saveChangesNote() : addNewNote()"
+      >
         <icon-base>
           <icon-save />
         </icon-base>
         {{ isEditable ? 'Сохранить' : 'Добавить заметку' }}
       </button>
-      <button v-if="history.length > 1" @click="undoChanges">
-        <icon-base>
-          <icon-undo />
-        </icon-base>
-      </button>
-      <button v-if="historyArchive.length > 1" @click="redoChanges">
-        <icon-base>
-          <icon-redo />
-        </icon-base>
-      </button>
-      <button v-if="isEditable && history.length > 1" @click="showModal('editing')">
+      <div class="note-action__history-buttons">
+        <button v-if="history.length > 1" @click="undoChanges">
+          <icon-base>
+            <icon-undo />
+          </icon-base>
+        </button>
+        <button v-if="historyArchive.length > 1" @click="redoChanges">
+          <icon-base>
+            <icon-redo />
+          </icon-base>
+        </button>
+      </div>
+      <button
+        class="note-action__button note-action__button--discard"
+        v-if="isEditable && history.length > 1"
+        @click="showModal('editing')"
+      >
         <icon-base>
           <icon-discard />
         </icon-base>
       </button>
-      <button v-if="isEditable" @click="showModal('delete')">
+      <button
+        class="note-action__button note-action__button--delete"
+        v-if="isEditable"
+        @click="showModal('delete')"
+      >
         <icon-base>
           <icon-delete-bin />
         </icon-base>
       </button>
-      <div class="note-action__warning">
-        <p class="note-action__warning-text">{{ warning }}</p>
-      </div>
     </footer>
     <modal
       v-if="isShowModal"
@@ -448,6 +462,7 @@ export default {
   &__add-input {
     width: 100%;
     border: none;
+    font-size: 16px;
   }
 
   &__footer {
@@ -456,18 +471,34 @@ export default {
     flex-direction: row;
   }
 
+  &__history-buttons {
+    display: flex;
+    flex-direction: row;
+    margin: 0 auto;
+  }
+
+  &__button {
+    color: $text-color;
+
+    &--save:hover {
+      color: $main-color;
+    }
+
+    &--discard:hover {
+      color: $orange-color;
+    }
+
+    &--delete:hover {
+      color: $red-color;
+    }
+  }
+
   &__warning {
-    bottom: 20px;
-    left: 0;
-    right: 0;
-    position: fixed;
-    font-size: 16px;
+    width: 100%;
+    margin: 20px 0;
+    font-size: 14px;
     text-transform: uppercase;
     color: $red-color;
-
-    &-text {
-      text-align: center;
-    }
   }
 
   @include sm-and-up {

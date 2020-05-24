@@ -87,6 +87,7 @@ export default {
   &__link {
     text-decoration: none;
     color: $text-color;
+    height: 100%;
   }
 
   &__title {
@@ -141,6 +142,7 @@ export default {
   &__delete {
     opacity: 1;
     margin-top: auto;
+    padding-top: 5px;
     transition: $transition;
   }
 
