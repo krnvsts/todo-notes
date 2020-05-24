@@ -2,18 +2,30 @@
   <div class="note-list">
     <p v-if="NOTES.length < 1">Ой, похоже тут пусто. Создай новую заметку</p>
     <note-item v-for="note in NOTES" :key="note.id" :note="note" />
-    <router-link class="note-list__button" :to="{name: 'AddNotes'}">Создать +</router-link>
+    <router-link class="note-list__add" :to="{name: 'AddNotes'}">
+      <icon-base class="note-list__add-icon">
+        <icon-add-circle />
+      </icon-base>
+    </router-link>
   </div>
 </template>
 
 <script>
 import NoteItem from "./NoteItem";
+
+// vuex
 import { mapGetters, mapActions } from "vuex";
+
+// icon
+import IconBase from "./icons/IconBase.vue";
+import IconAddCircle from "./icons/IconAddCircle.vue";
 
 export default {
   name: "NoteList",
   components: {
-    NoteItem
+    NoteItem,
+    IconBase,
+    IconAddCircle
   },
   computed: {
     ...mapGetters(["NOTES"])
@@ -35,9 +47,22 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
 
-  &__button {
-    border: 2px solid $main-color;
-    padding: 10px;
+  &__add {
+    color: $main-color;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    user-select: none;
+
+    &:hover {
+      transform: rotate(360deg);
+      transition: $transition-long;
+    }
+
+    &-icon {
+      width: 60px;
+      height: 60px;
+    }
   }
 }
 </style>

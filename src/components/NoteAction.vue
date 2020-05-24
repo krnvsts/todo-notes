@@ -8,6 +8,7 @@
       @input="note.title = $event.target.value"
       @focus="startEditTitle()"
       @blur="editTitle()"
+      maxlength="50"
     />
     <transition-group name="list" tag="ul">
       <li class="note-action__todo" v-for="(todo, index) in note.todo" :key="index">
@@ -27,7 +28,11 @@
           @focus="startEditTodo()"
           @blur="editTodo(index)"
         />
-        <button @click="deleteTodo(index)">❌</button>
+        <button @click="deleteTodo(index)">
+          <icon-base>
+            <icon-clear />
+          </icon-base>
+        </button>
       </li>
     </transition-group>
     <div class="note-action__add">
@@ -38,18 +43,39 @@
         @keyup.enter="addNewTodo"
         ref="todoInput"
       />
-      <button @click="addNewTodo">➕</button>
+      <button @click="addNewTodo">
+        <icon-base>
+          <icon-add-circle />
+        </icon-base>
+      </button>
     </div>
-    <button v-if="isEditable" @click="showModal('delete')">❌Удалить заметку</button>
-    <button
-      @click="isEditable ? saveChangesNote() : addNewNote()"
-    >{{ isEditable ? '💾 Сохранить' : '💾 Добавить заметку' }}</button>
-    <button
-      v-if="isEditable && history.length > 1"
-      @click="showModal('editing')"
-    >↪️Отменить редактирование</button>
-    <button v-if="history.length > 1" @click="undoChanges">⬅️Отменить действие</button>
-    <button v-if="historyArchive.length > 1" @click="redoChanges">➡️Повторить действие</button>
+    <button v-if="isEditable" @click="showModal('delete')">
+      <icon-base>
+        <icon-delete-bin />
+      </icon-base>
+      <span>Удалить заметку</span>
+    </button>
+    <button @click="isEditable ? saveChangesNote() : addNewNote()">
+      <icon-base>
+        <icon-save />
+      </icon-base>
+      {{ isEditable ? 'Сохранить' : 'Добавить заметку' }}
+    </button>
+    <button v-if="isEditable && history.length > 1" @click="showModal('editing')">
+      <icon-base>
+        <icon-discard />
+      </icon-base>
+    </button>
+    <button v-if="history.length > 1" @click="undoChanges">
+      <icon-base>
+        <icon-undo />
+      </icon-base>
+    </button>
+    <button v-if="historyArchive.length > 1" @click="redoChanges">
+      <icon-base>
+        <icon-redo />
+      </icon-base>
+    </button>
     <modal
       v-if="isShowModal"
       :typeModal="typeModal"
@@ -66,6 +92,16 @@ import Modal from "./modal/Modal";
 import modal from "../mixins/modal";
 import { mapGetters, mapActions } from "vuex";
 
+// icons
+import IconBase from "./icons/IconBase.vue";
+import IconAddCircle from "./icons/IconAddCircle.vue";
+import IconClear from "./icons/IconClear.vue";
+import IconDeleteBin from "./icons/IconDeleteBin.vue";
+import IconSave from "./icons/IconSave.vue";
+import IconUndo from "./icons/IconUndo.vue";
+import IconRedo from "./icons/IconRedo.vue";
+import IconDiscard from "./icons/IconDiscard.vue";
+
 export default {
   name: "NoteAction",
   data: () => ({
@@ -77,7 +113,15 @@ export default {
   }),
   mixins: [modal],
   components: {
-    Modal
+    Modal,
+    IconBase,
+    IconAddCircle,
+    IconClear,
+    IconDeleteBin,
+    IconSave,
+    IconUndo,
+    IconRedo,
+    IconDiscard
   },
   created() {
     this.setNoteData();
@@ -245,15 +289,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "~@/styles/variables.scss";
+
 .list-enter-active,
 .list-leave-active {
   transition: all 0.1s;
 }
+
 .list-enter,
 .list-leave-to {
   opacity: 0;
   transform: translateY(10px);
 }
+
 .note-action {
   margin: 40px auto;
   width: 200px;
@@ -280,12 +328,8 @@ export default {
     display: block;
     position: relative;
     padding-left: 35px;
-    margin-bottom: 12px;
     cursor: pointer;
     font-size: 22px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 
     .note-action__checkbox {
@@ -301,7 +345,7 @@ export default {
     }
 
     & .note-action__checkbox:checked ~ .note-action__checkmark {
-      background-color: #2196f3;
+      background-color: $main-color;
       &:after {
         display: block;
       }
@@ -324,6 +368,7 @@ export default {
     left: 0;
     height: 25px;
     width: 25px;
+    border-radius: 50%;
     background-color: #eee;
 
     &:after {

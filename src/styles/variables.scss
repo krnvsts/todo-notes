@@ -1,6 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap');
 
+// sizes
+$min-width: 320px;
+$sm: 576px;
+$md: 768px;
+$lg: 992px;
+$max-width: 1200px;
+
 // colors
 $white: #fff;
 $main-color: #4db6ac;
 $text-color: #2f2f2f;
+$gray-color: #e0e0e0;
+$green-color: #00b66b;
+$orange-color: #ffc107;
+$red-color: #ff7f6e;
+
+// radius
+$brd: 10px;
+
+// shadow
+$shadow: 0px 0px 10px 0px rgba(0, 0, 0, .15);
+
+// transition
+$transition: all .1s;
+$transition-long: all .3s;

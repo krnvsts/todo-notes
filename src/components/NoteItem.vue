@@ -15,7 +15,12 @@
         </li>
       </ul>
     </router-link>
-    <button @click="showModal('delete')">❌Удалить</button>
+    <button @click="showModal('delete')">
+      <icon-base>
+        <icon-delete-bin />
+      </icon-base>
+      <span>Удалить</span>
+    </button>
     <modal
       v-if="isShowModal"
       :typeModal="typeModal"
@@ -30,11 +35,17 @@ import Modal from "./modal/Modal";
 import modal from "../mixins/modal";
 import { mapActions } from "vuex";
 
+// icon
+import IconBase from "./icons/IconBase.vue";
+import IconDeleteBin from "./icons/IconDeleteBin.vue";
+
 export default {
   name: "NoteItem",
   mixins: [modal],
   components: {
-    Modal
+    Modal,
+    IconBase,
+    IconDeleteBin
   },
   props: {
     note: {
@@ -55,15 +66,35 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/variables.scss";
+@import "~@/styles/mixins.scss";
 
 .note-item {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 300px;
-  border: 1px solid $main-color;
+  box-sizing: border-box;
+  border: 1px solid $gray-color;
+  border-radius: $brd;
   padding: 15px;
   margin: 15px;
+  overflow: hidden;
+  transition: $transition;
+
+  &:hover {
+    box-shadow: $shadow;
+  }
+
+  @include sm-and-up {
+    width: 44%;
+  }
+
+  @include md-and-up {
+    width: 29%;
+  }
+
+  @include lg-and-up {
+    width: 16.9%;
+  }
 
   &__link {
     text-decoration: none;
@@ -72,6 +103,7 @@ export default {
 
   &__title {
     font-size: 24px;
+    word-break: break-word;
   }
 
   &__list {

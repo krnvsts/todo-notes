@@ -2,6 +2,10 @@
   <div class="modal">
     <div @click="hideWindow" class="modal__wrapper">
       <div class="modal__window">
+        <icon-base>
+          <icon-error v-if="typeModal == 'delete'" />
+          <icon-warning v-else />
+        </icon-base>
         <p>{{ type[typeModal].title }}?</p>
         <button @click="confirm()">{{ type[typeModal].buton }}</button>
         <button @click="hideWindow">Закрыть</button>
@@ -11,12 +15,22 @@
 </template>
 
 <script>
+// icon
+import IconBase from "../icons/IconBase.vue";
+import IconWarning from "../icons/IconWarning.vue";
+import IconError from "../icons/IconError.vue";
+
 export default {
   name: "Modal",
+  components: {
+    IconBase,
+    IconWarning,
+    IconError
+  },
   data: () => ({
     type: {
       delete: {
-        title: "Удалить",
+        title: "Удалить заметку",
         buton: "Удалить"
       },
       editing: {
@@ -43,6 +57,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "~@/styles/variables.scss";
+
 .modal {
   &__wrapper {
     display: block;
@@ -59,6 +75,7 @@ export default {
     display: block;
     overflow: hidden;
     position: fixed;
+    border-radius: $brd;
     background: #fff;
     left: 50%;
     top: 50%;
@@ -67,6 +84,7 @@ export default {
     padding: 55px;
     z-index: 2000;
     animation: scale 50ms linear;
+    box-shadow: $shadow;
   }
 }
 
