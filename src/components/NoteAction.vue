@@ -59,16 +59,6 @@
         </icon-base>
         {{ isEditable ? 'Сохранить' : 'Добавить заметку' }}
       </button>
-      <button v-if="isEditable" @click="showModal('delete')">
-        <icon-base>
-          <icon-delete-bin />
-        </icon-base>
-      </button>
-      <button v-if="isEditable && history.length > 1" @click="showModal('editing')">
-        <icon-base>
-          <icon-discard />
-        </icon-base>
-      </button>
       <button v-if="history.length > 1" @click="undoChanges">
         <icon-base>
           <icon-undo />
@@ -77,6 +67,16 @@
       <button v-if="historyArchive.length > 1" @click="redoChanges">
         <icon-base>
           <icon-redo />
+        </icon-base>
+      </button>
+      <button v-if="isEditable && history.length > 1" @click="showModal('editing')">
+        <icon-base>
+          <icon-discard />
+        </icon-base>
+      </button>
+      <button v-if="isEditable" @click="showModal('delete')">
+        <icon-base>
+          <icon-delete-bin />
         </icon-base>
       </button>
       <div class="note-action__warning">
@@ -347,7 +347,7 @@ export default {
   transition: $transition;
 
   &__title {
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 600;
     border: none;
     padding: 10px 0;
@@ -367,7 +367,7 @@ export default {
   &__checkbox-label {
     display: block;
     position: relative;
-    margin: 8px 0 0 2px;
+    margin: 6px 0 0 2px;
     padding: 0 0 0 35px;
     cursor: pointer;
     font-size: 22px;
@@ -421,8 +421,8 @@ export default {
 
   &__todo-name {
     width: 100%;
-    font-size: 14px;
-    padding: 12px 0;
+    font-size: 16px;
+    padding: 8px 0;
     border: none;
   }
 
@@ -473,6 +473,10 @@ export default {
   @include sm-and-up {
     width: 400px;
   }
+}
+
+::placeholder {
+  color: $placeholder-color;
 }
 
 .list-enter-active,

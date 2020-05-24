@@ -8,10 +8,10 @@
 		}"
     >
       <h2 :style="{ color: `#${note.id}bb`}" class="note-item__title">{{ note.title }}</h2>
-      <ul class="note-item__list">
-        <li v-for="(todo, index) in note.todo" :key="index">
-          <input type="checkbox" value="1" :checked="todo[0]" @click.prevent />
-          <span :class="{'note-item__list-item--checked': todo[0]}">{{ todo[1] }}</span>
+      <ul class="note-item__todo">
+        <li class="note-item__todo-item" v-for="(todo, index) in note.todo" :key="index">
+          <span class="note-item__checkbox" :class="{'note-item__checkbox--checked': todo[0]}" />
+          <span :class="{'note-item__todo-text--checked': todo[0]}">{{ todo[1] }}</span>
         </li>
       </ul>
     </router-link>
@@ -92,14 +92,47 @@ export default {
   &__title {
     font-size: 24px;
     word-break: break-word;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
   }
 
-  &__list {
+  &__todo {
     list-style: none;
   }
 
-  &__list-item {
+  &__todo-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 7px 0;
+  }
+
+  &__checkbox {
+    display: block;
+    position: relative;
+    min-width: 25px;
+    width: 25px;
+    height: 25px;
+    background: $gray-color;
+    border-radius: 50%;
+    margin-right: 5px;
+
+    &--checked {
+      background: $main-color;
+      &::after {
+        content: "";
+        position: absolute;
+        left: 9px;
+        top: 5px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
+      }
+    }
+  }
+
+  &__todo-text {
     &--checked {
       text-decoration: line-through;
     }

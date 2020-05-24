@@ -12,4 +12,7 @@ button {
 	background: transparent;
 	user-select: none;
 	cursor: pointer;
+	display: flex;
+	align-items: flex-end;
+	text-transform: uppercase;
 }
