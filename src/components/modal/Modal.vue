@@ -21,7 +21,7 @@
 </template>
 
 <script>
-// icon
+// icons
 import IconBase from "../icons/IconBase.vue";
 import IconWarning from "../icons/IconWarning.vue";
 import IconError from "../icons/IconError.vue";
@@ -132,6 +132,7 @@ export default {
 
     &--editing {
       color: $orange-color;
+
       &:hover {
         background-color: $orange-color;
         color: #fff;
@@ -140,6 +141,7 @@ export default {
 
     &--delete {
       color: $red-color;
+
       &:hover {
         background-color: $red-color;
         color: #fff;

@@ -2,7 +2,7 @@
   <div class="note-list">
     <div class="note-list__empty-state" v-if="NOTES.length < 1">
       <img class="note-list__empty-img" :src="require('../assets/empty.png')" alt="empty" />
-      <p class="note-list__empty-text">Ой, похоже тут пусто. Создай новую заметку (плюсик внизу)</p>
+      <p>Ой, похоже тут пусто. Создай новую заметку (плюсик внизу)</p>
     </div>
     <note-item v-for="note in NOTES" :key="note.id" :note="note" />
     <router-link class="note-list__add" :to="{name: 'AddNotes'}">
@@ -61,8 +61,6 @@ export default {
   &__empty-img {
     width: 100%;
     max-width: 400px;
-  }
-  &__empty-text {
   }
 
   &__add {

@@ -1,18 +1,17 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import defaultState from "../config/defaultState"
 
 Vue.use(Vuex);
 
 let store = new Vuex.Store({
 	state: {
-		// Глобальное хранилище
 		notes: []
 	},
 	mutations: {
-		// Мутируем (изменяем) наш state (синхронно)
 		SET_NOTES: (state) => {
-			// Если ничего нет в LS - сетим стандартную заметку
-			// Если есть - сетим все что есть в цикле
+			// Если заметок нет в LS - сетим дефолтные заметки
+			// Иначе сетим все из LS
 			let isExistLSKey = localStorage.getItem("notes");
 			let data;
 
@@ -22,27 +21,19 @@ let store = new Vuex.Store({
 					state.notes.push(data[i])
 				}
 			} else {
-				data = [{
-					id: 500023,
-					title: "Ближайшие планы",
-					todo: [
-						[true, "Выполнить тестовое задание"],
-						[false, "Пройти собеседование"],
-						[false, "Разрабатывать крутые сайты с TR LogicLLC"]
-					]
-				}];
+				data = defaultState
 				state.notes.push(data[0])
 				localStorage.setItem('notes', JSON.stringify(data));
 			}
 		},
 		SET_ITEM: (state, note) => {
-			// Добавить новую заметку
+			// Добавить новую заметку (+ генерация id)
 			let noteObj = note
-			let rand = Math.floor(100000 + Math.random() * 900000)
-			note.id = rand
+			note.id = Math.floor(100000 + Math.random() * 900000)
 			state.notes.push(noteObj)
 		},
 		CHANGE_ITEM: (state, note) => {
+			// Изменить заметку (находим в стейте и перезаписываем)
 			let changededState = state.notes.map(elem => {
 				if (elem.id == note.id) {
 					elem = note;
@@ -61,20 +52,20 @@ let store = new Vuex.Store({
 			})
 		},
 		CHANGE_LOCAL_STORE: (state) => {
-			// Сетим данные в LS
+			// Засетить данные в LS
 			let localStorageArray = localStorage.getItem("notes");
 			let currentLS = JSON.parse(localStorageArray)
 			currentLS = state.notes
 			localStorage.setItem('notes', JSON.stringify(currentLS));
 		},
 		UPDATE_STORE: (state) => {
+			// Вызвать обновление стейта
 			let localStorageArray = localStorage.getItem("notes");
 			let currentLS = JSON.parse(localStorageArray)
 			state.notes = currentLS
 		}
 	},
 	actions: {
-		// Запускаем мутации (асинхронно)
 		ADD_DEFAULT({ commit }) {
 			commit('SET_NOTES')
 		},
@@ -95,7 +86,6 @@ let store = new Vuex.Store({
 		}
 	},
 	getters: {
-		// Получаем значение из state в компонентах
 		NOTES(state) {
 			return state.notes
 		}

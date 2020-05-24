@@ -32,7 +32,11 @@
 
 <script>
 import Modal from "./modal/Modal";
+
+// mixins
 import modal from "../mixins/modal";
+
+// vuex
 import { mapActions } from "vuex";
 
 // icon
@@ -119,6 +123,7 @@ export default {
 
     &--checked {
       background: $main-color;
+
       &::after {
         content: "";
         position: absolute;

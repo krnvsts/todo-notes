@@ -25,8 +25,10 @@
         </label>
         <input
           class="note-action__todo-name"
+          :class="{'note-action__todo-name--checked': todo[0]}"
           type="text"
           v-model="note.todo[index][1]"
+          maxlength="50"
           @focus="startEditTodo()"
           @blur="editTodo(index)"
         />
@@ -438,6 +440,10 @@ export default {
     font-size: 16px;
     padding: 8px 0;
     border: none;
+
+    &--checked {
+      text-decoration: line-through;
+    }
   }
 
   &__todo-delete {
@@ -448,9 +454,6 @@ export default {
     display: flex;
     justify-content: space-between;
     margin-top: 5px;
-  }
-
-  &__add-button {
   }
 
   &__add-icon {
