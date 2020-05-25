@@ -18,3 +18,11 @@ button {
 	font-size: 12px;
 	font-weight: 600;
 }
+
+textarea,
+input[type="text"],
+input[type="button"],
+input[type="submit"] {
+	-webkit-appearance: none;
+  border-radius: 0;
+}
