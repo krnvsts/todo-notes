@@ -1,5 +1,7 @@
 # SPA для ведения заметок 📝
 
+![](public/img/preview.jpg)
+
 Для TR LogicLLC
 
 ### Установка
@@ -53,4 +55,6 @@ yarn build
 
 
 
-![](https://raw.githubusercontent.com/krnvsts/todo-notes/master/public/report.png)
+Чтобы избежать `/#/` в пути нужно раскомментировать в  `router/router.js`  - `mode: 'history'` 
+
+![](public/img/report.png)

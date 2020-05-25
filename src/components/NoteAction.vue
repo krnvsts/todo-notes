@@ -100,7 +100,7 @@
         </icon-base>
       </button>
     </footer>
-    <modal
+    <modal-popup
       v-if="isShowModal"
       :typeModal="typeModal"
       @hideWindow="hideWindow"
@@ -110,7 +110,7 @@
 </template>
 
 <script>
-import Modal from "./modal/Modal";
+import ModalPopup from "./modal/ModalPopup";
 
 // mixins
 import modal from "../mixins/modal";
@@ -131,7 +131,7 @@ import IconDiscard from "./icons/IconDiscard.vue";
 export default {
   name: "NoteAction",
   components: {
-    Modal,
+    ModalPopup,
     IconBase,
     IconAddCircle,
     IconClear,

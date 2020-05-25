@@ -21,7 +21,7 @@
       </icon-base>
       <span>Удалить</span>
     </button>
-    <modal
+    <modal-popup
       v-if="isShowModal"
       :typeModal="typeModal"
       @hideWindow="hideWindow"
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import Modal from "./modal/Modal";
+import ModalPopup from "./modal/ModalPopup";
 
 // mixins
 import modal from "../mixins/modal";
@@ -46,7 +46,7 @@ import IconDeleteBin from "./icons/IconDeleteBin.vue";
 export default {
   name: "NoteItem",
   components: {
-    Modal,
+    ModalPopup,
     IconBase,
     IconDeleteBin
   },

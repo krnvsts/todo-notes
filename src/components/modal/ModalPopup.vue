@@ -1,19 +1,19 @@
 <template>
-  <div class="modal">
-    <div @click="hideWindow" class="modal__wrapper">
-      <div class="modal__window">
-        <icon-base class="modal__icon" :class="['modal__icon--' + typeModal]">
+  <div class="modal-popup">
+    <div @click="hideWindow" class="modal-popup__wrapper">
+      <div class="modal-popup__window">
+        <icon-base class="modal-popup__icon" :class="['modal-popup__icon--' + typeModal]">
           <icon-error v-if="typeModal == 'delete'" />
           <icon-warning v-else />
         </icon-base>
-        <p class="modal__title">{{ type[typeModal].title }}?</p>
-        <div class="modal__footer">
+        <p class="modal-popup__title">{{ type[typeModal].title }}?</p>
+        <div class="modal-popup__footer">
           <button
-            class="modal__button"
-            :class="['modal__button--' + typeModal]"
+            class="modal-popup__button"
+            :class="['modal-popup__button--' + typeModal]"
             @click="confirm()"
           >{{ type[typeModal].buton }}</button>
-          <button class="modal__button" @click="hideWindow">Закрыть</button>
+          <button class="modal-popup__button" @click="hideWindow">Закрыть</button>
         </div>
       </div>
     </div>
@@ -27,7 +27,7 @@ import IconWarning from "../icons/IconWarning.vue";
 import IconError from "../icons/IconError.vue";
 
 export default {
-  name: "Modal",
+  name: "ModalPopup",
   components: {
     IconBase,
     IconWarning,
@@ -65,7 +65,7 @@ export default {
 <style lang="scss" scoped>
 @import "~@/styles/variables.scss";
 
-.modal {
+.modal-popup {
   &__wrapper {
     display: block;
     background: #00000055;
