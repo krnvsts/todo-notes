@@ -2,7 +2,6 @@
 
 ![](public/img/preview.jpg)
 
-Для TR LogicLLC
 
 ### Установка
 ```
@@ -55,6 +54,6 @@ yarn build
 
 
 
-Чтобы избежать `/#/` в пути нужно раскомментировать в  `router/router.js`  - `mode: 'history'` 
+Чтобы избежать `/#/` в пути нужно раскомментировать в  `router/router.js`  - `mode: 'history'`
 
 ![](public/img/report.png)
