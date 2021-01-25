@@ -1,4 +1,6 @@
 <template>
+<div class="wrapper">
+	<back-button />
   <div class="note-action">
     <input
       type="text"
@@ -107,32 +109,35 @@
       @modalConfirm="modalConfirm"
     />
   </div>
+</div>
 </template>
 
 <script>
-import ModalPopup from "./modal/ModalPopup";
+import ModalPopup from "./modal/ModalPopup"
+import BackButton from "./BackButton"
 
 // mixins
-import modal from "../mixins/modal";
+import modal from "../mixins/modal"
 
 // vuex
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex"
 
 // icons
-import IconBase from "./icons/IconBase.vue";
-import IconAddCircle from "./icons/IconAddCircle.vue";
-import IconClear from "./icons/IconClear.vue";
-import IconDeleteBin from "./icons/IconDeleteBin.vue";
-import IconSave from "./icons/IconSave.vue";
-import IconUndo from "./icons/IconUndo.vue";
-import IconRedo from "./icons/IconRedo.vue";
-import IconDiscard from "./icons/IconDiscard.vue";
+import IconBase from "./icons/IconBase.vue"
+import IconAddCircle from "./icons/IconAddCircle.vue"
+import IconClear from "./icons/IconClear.vue"
+import IconDeleteBin from "./icons/IconDeleteBin.vue"
+import IconSave from "./icons/IconSave.vue"
+import IconUndo from "./icons/IconUndo.vue"
+import IconRedo from "./icons/IconRedo.vue"
+import IconDiscard from "./icons/IconDiscard.vue"
 
 export default {
   name: "NoteAction",
   components: {
-    ModalPopup,
-    IconBase,
+		ModalPopup,
+		BackButton,
+		IconBase,
     IconAddCircle,
     IconClear,
     IconDeleteBin,
@@ -335,6 +340,12 @@ export default {
 @import "~@/styles/variables.scss";
 @import "~@/styles/mixins.scss";
 
+.wrapper {
+	width: 100%;
+	display: flex;
+  align-items: flex-start;
+}
+
 .note-action {
   display: flex;
   flex-direction: column;
@@ -344,7 +355,11 @@ export default {
   padding: 15px;
   margin: 15px auto;
   overflow: hidden;
-  transition: $transition;
+	transition: $transition;
+
+	@include xs-and-up {
+    width: 400px;
+  }
 
   &__title {
     font-size: 30px;
@@ -492,10 +507,6 @@ export default {
     font-size: 14px;
     text-transform: uppercase;
     color: $red-color;
-  }
-
-  @include xs-and-up {
-    width: 400px;
   }
 }
 

@@ -109,7 +109,7 @@ export default {
   &__todo-item {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     margin: 7px 0;
   }
 
@@ -179,6 +179,7 @@ export default {
   }
 
   @include lg-and-up {
+		min-width: 270px;
     width: 17.5%;
   }
 }
